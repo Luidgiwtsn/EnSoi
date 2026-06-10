@@ -1,0 +1,27 @@
+# Environnement — NE JAMAIS COMMITER
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.coverage
+htmlcov/
+.pytest_cache/
+coverage.xml
+
+# Node
+node_modules/
+dist/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Logs & backups
+*.log
+backups/

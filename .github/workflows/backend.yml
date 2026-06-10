@@ -1,0 +1,29 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: cd backend && pip install -r requirements.txt
+
+      - name: Lancer les tests
+        env:
+          DATABASE_URL: sqlite:///./test.db
+          SECRET_KEY: cle-de-test-pour-ci-seulement-32chars
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          FRONTEND_URL: http://localhost:5173
+          ENVIRONMENT: test
+        run: cd backend && pytest --cov=app -v
