@@ -1,5 +1,8 @@
 {
   "name": "ensoi-app",
   "version": "1.0.0",
-  "author": "Luidgi Watson"
+  "author": "Luidgi Watson",
+    "scripts": {
+    "build": "echo HelloWorld"
+  }
 }
