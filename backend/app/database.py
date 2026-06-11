@@ -3,6 +3,9 @@
 from sqlmodel import SQLModel, Session, create_engine
 from app.config import settings
 
+# Import obligatoire pour que SQLModel.metadata connaisse les tables
+from app.models import User, Profil, ShareToken  # noqa: F401
+
 engine = create_engine(
     settings.database_url,
     echo=not settings.is_production(),
