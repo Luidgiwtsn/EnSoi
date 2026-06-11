@@ -16,7 +16,8 @@ class Profil(SQLModel, table=True):
         ondelete="CASCADE",   # Suppression compte → suppression profils
         index=True,
     )
-    nom: str = Field(max_length=100, nullable=False)
+    prenom: str = Field(max_length=100, nullable=False)
+    nom_famille: str = Field(max_length=100, nullable=False)
     date_naissance: date = Field(nullable=False)
 
     # Résultats algorithmiques — JSONB flexible
