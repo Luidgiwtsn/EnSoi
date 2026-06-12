@@ -58,11 +58,9 @@ async def response_time(request: Request, call_next):
     return response
 
 
-# Routers — décommentés au fur et à mesure
-# from app.routers import auth, profils, users
-# app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-# app.include_router(profils.router, prefix="/api", tags=["Profils"])
-# app.include_router(users.router, prefix="/users", tags=["Users"])
+# Routers
+from app.routers.profils import router as profils_router
+app.include_router(profils_router)
 
 
 @app.get("/api/health", tags=["Système"])
