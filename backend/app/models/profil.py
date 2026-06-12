@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 from typing import Any, Dict, Optional
 from sqlmodel import Column, Field, SQLModel
 from sqlalchemy import JSON
@@ -19,6 +19,8 @@ class Profil(SQLModel, table=True):
     prenom: str = Field(max_length=100, nullable=False)
     nom_famille: str = Field(max_length=100, nullable=False)
     date_naissance: date = Field(nullable=False)
+    heure_naissance: Optional[time] = Field(default=None, nullable=True)
+    lieu_naissance: Optional[str] = Field(default=None, max_length=200, nullable=True)
 
     # Résultats algorithmiques — JSONB flexible
     numerologie: Dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))
