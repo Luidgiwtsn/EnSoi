@@ -6,6 +6,7 @@ from app.services.numerologie import (
     calcul_chemin_vie,
     calcul_expression,
     calcul_intime,
+    calcul_realisation,
     calculer,
 )
 
@@ -70,10 +71,21 @@ def test_intime_resultat_valide():
     assert isinstance(result, int)
     assert 1 <= result <= 33
 
-def test_calculer_retourne_trois_valeurs():
-    """calculer() retourne chemin_vie, expression et intime."""
+def test_calculer_retourne_quatre_valeurs():
+    """calculer() retourne chemin_vie, expression, intime et realisation."""
     result = calculer('Alice', 'Martin', date(1990, 6, 12))
     assert 'chemin_vie' in result
     assert 'expression' in result
     assert 'intime' in result
+    assert 'realisation' in result
     assert all(isinstance(v, int) for v in result.values())
+    
+def test_realisation_alice_martin():
+    """Consonnes uniquement, accents gérés."""
+    result = calcul_realisation('Alice Martin')
+    assert isinstance(result, int)
+    assert 1 <= result <= 33
+
+def test_expression_avec_accent():
+    """Les accents doivent être normalisés — Chloé = Chloe."""
+    assert calcul_expression('Chloé Dupont') == calcul_expression('Chloe Dupont')
