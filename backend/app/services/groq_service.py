@@ -159,9 +159,9 @@ class GroqService:
     """
 
     def __init__(self) -> None:
-        self._client = Groq(api_key=settings.GROQ_API_KEY)
-        self._model = settings.GROQ_MODEL
-        self._timeout = float(settings.GROQ_TIMEOUT)
+        self._client = Groq(api_key=settings.groq_api_key)
+        self._model = settings.groq_model
+        self._timeout = float(settings.groq_timeout)
 
     def generer_synthese(self, profil_data: dict) -> Optional[str]:
         """
@@ -212,4 +212,10 @@ class GroqService:
 
 
 # Singleton
-groq_service = GroqService()
+_groq_service_instance: Optional[GroqService] = None
+
+def get_groq_service() -> GroqService:
+    global _groq_service_instance
+    if _groq_service_instance is None:
+        _groq_service_instance = GroqService()
+    return _groq_service_instance

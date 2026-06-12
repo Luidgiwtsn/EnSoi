@@ -66,6 +66,12 @@ def service():
 # Tests — _construire_prompt
 
 
+def _mock_response(texte: str):
+    response = MagicMock()
+    response.choices[0].message.content = texte
+    return response
+
+
 class TestConstruirePrompt:
 
     def test_contient_prenom(self, profil_data):
@@ -114,15 +120,10 @@ class TestConstruirePrompt:
 
 class TestGenererSynthese:
 
-    def _mock_response(self, texte: str):
-        response = MagicMock()
-        response.choices[0].message.content = texte
-        return response
 
     def test_retourne_synthese_si_groq_ok(self, service, profil_data):
-        service._client.chat.completions.create.return_value = self._mock_response(
-            "  Synthèse générée.  "
-        )
+        service._client.chat.completions.create.return_value = _mock_response("  Synthèse générée.  ")
+
         result = service.generer_synthese(profil_data)
         assert result == "Synthèse générée."  # strip() appliqué
 
@@ -145,7 +146,7 @@ class TestGenererSynthese:
 
     def test_succes_reset_circuit_breaker(self, service, profil_data):
         module._cb_failures = 2  # Pré-condition : 2 échecs déjà enregistrés
-        service._client.chat.completions.create.return_value = self._mock_response("OK")
+        service._client.chat.completions.create.return_value = _mock_response("OK")
         service.generer_synthese(profil_data)
         assert module._cb_failures == 0
         assert module._cb_opened_at is None
@@ -172,7 +173,7 @@ class TestCircuitBreaker:
     def test_recovery_apres_delai(self, service, profil_data):
         """Après _CB_RECOVERY_SEC, le circuit passe en half-open et laisse passer un appel."""
         module._cb_opened_at = time.monotonic() - (module._CB_RECOVERY_SEC + 1)
-        service._client.chat.completions.create.return_value = self._mock_response("Récupéré")
+        service._client.chat.completions.create.return_value = _mock_response("Récupéré")
         result = service.generer_synthese(profil_data)
         assert result == "Récupéré"
         assert module._cb_opened_at is None  # Reset complet après succès
