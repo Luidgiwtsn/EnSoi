@@ -15,6 +15,7 @@ from app.config import settings
 from app.database import create_db_and_tables, engine
 from app.routers.auth import router as auth_router
 from app.routers.profils import router as profils_router
+from app.routers.users import router as users_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ensoi")
@@ -63,6 +64,7 @@ async def add_response_time_header(request: Request, call_next):
 
 # Routers
 app.include_router(auth_router)
+app.include_router(users_router)
 app.include_router(profils_router)
 
 
