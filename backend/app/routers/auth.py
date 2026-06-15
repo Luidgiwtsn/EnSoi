@@ -3,7 +3,7 @@ Router Auth - /auth/*
 Endpoints publics (pas de token requis sauf /auth/logout et /auth/change-password).
 """
 
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -24,8 +24,10 @@ from app.services.auth import (
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# Schéma de sécurité Bearer — active le cadenas dans Swagger UI
+# Schéma de sécurité Bearer - active le cadenas dans Swagger UI
 security = HTTPBearer()
+# Version optionnelle - retourne None si pas de token au lieu de lever 403
+security_optional = HTTPBearer(auto_error=False)
 
 
 class RefreshTokenRequest(BaseModel):
@@ -85,6 +87,26 @@ def get_current_user(
         )
     return user
 
+def get_current_user_optional(
+    credentials: Annotated[Optional[HTTPAuthorizationCredentials], Depends(security_optional)],
+    session: Annotated[Session, Depends(get_session)],
+) -> Optional[User]:
+    """
+    Dépendance optionnelle : retourne l'utilisateur si token valide,
+    None si pas de token. Utilisée sur les routes accessibles aux anonymes.
+    """
+    if not credentials:
+        return None
+    try:
+        token = credentials.credentials
+        payload = decode_access_token(token)
+        user_id: int = int(payload.get("sub"))
+        user = session.get(User, user_id)
+        if not user or not user.is_active:
+            return None
+        return user
+    except Exception:
+        return None
 
 
 # POST /auth/register
