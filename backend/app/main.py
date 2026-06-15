@@ -1,17 +1,20 @@
 """Point d'entrée FastAPI — EnSoi."""
 
-import time
 import logging
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
+from sqlmodel import Session, text
 
 from app.config import settings
-from app.database import create_db_and_tables
+from app.database import create_db_and_tables, engine
+from app.routers.auth import router as auth_router
+from app.routers.profils import router as profils_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ensoi")
@@ -42,13 +45,13 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.frontend_url],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
 
 
 @app.middleware("http")
-async def response_time(request: Request, call_next):
+async def add_response_time_header(request: Request, call_next):
     start = time.time()
     response = await call_next(request)
     ms = (time.time() - start) * 1000
@@ -59,24 +62,24 @@ async def response_time(request: Request, call_next):
 
 
 # Routers
-from app.routers.profils import router as profils_router
+app.include_router(auth_router)
 app.include_router(profils_router)
 
 
 @app.get("/api/health", tags=["Système"])
 async def health():
-    """Vérification état de l'API."""
-    from sqlmodel import Session, text
+    """Vérification état de l'API et de ses dépendances."""
+    db_status = "ok"
     try:
-        with Session(__import__('app.database', fromlist=['engine']).engine) as s:
-            s.exec(text("SELECT 1"))
-        db = "ok"
-    except Exception:
-        db = "error"
+        with Session(engine) as session:
+            session.exec(text("SELECT 1"))
+    except Exception as e:
+        logger.error(f"Échec healthcheck BDD : {e}")
+        db_status = "error"
 
     return {
-        "status": "ok" if db == "ok" else "degraded",
+        "status": "ok" if db_status == "ok" else "degraded",
         "version": "1.0.0",
-        "database": db,
+        "database": db_status,
         "groq": "ok" if settings.groq_api_key else "missing",
     }
