@@ -11,7 +11,8 @@ class ProfilRequest(BaseModel):
     nom_famille: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-ZÀ-ÿ\s\-]+$')
     date_naissance: date
     heure_naissance: Optional[time] = None
-    lieu_naissance: Optional[str] = Field(default=None, max_length=200)
+    pays_naissance: Optional[str] = Field(default=None, max_length=100)
+    fuseau_horaire_naissance: Optional[str] = Field(default=None, max_length=50)
     reponses_cognitif: List[int] = Field(min_length=12, max_length=12)
 
     @field_validator('reponses_cognitif')
@@ -35,6 +36,32 @@ class ProfilRequest(BaseModel):
             )
         return v
 
+    @field_validator('pays_naissance')
+@classmethod
+def valider_pays(cls, v: Optional[str]) -> Optional[str]:
+    if v is None:
+        return v
+    import pycountry
+    pays = pycountry.countries.get(name=v) or pycountry.countries.get(alpha_2=v.upper())
+    if pays is None:
+        raise PydanticCustomError(
+            "pays_invalide",
+            "Le pays fourni n'est pas reconnu"
+        )
+    return v
+
+@field_validator('fuseau_horaire_naissance')
+@classmethod
+def valider_fuseau(cls, v: Optional[str]) -> Optional[str]:
+    if v is None:
+        return v
+    import pytz
+    if v not in pytz.all_timezones:
+        raise PydanticCustomError(
+            "fuseau_invalide",
+            "Le fuseau horaire fourni n'est pas reconnu"
+        )
+    return v
 
 class DimensionCognitive(BaseModel):
     dominant: str
@@ -81,7 +108,8 @@ class ProfilComplet(BaseModel):
     nom_famille: str
     date_naissance: date
     heure_naissance: Optional[time] = None
-    lieu_naissance: Optional[str] = None
+    pays_naissance: Optional[str] = None
+    fuseau_horaire_naissance: Optional[str] = None
     numerologie: NumerologieResult
     profil_cognitif: ProfilCognitifResult
     human_design: HumanDesignResult
