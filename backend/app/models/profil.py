@@ -20,7 +20,8 @@ class Profil(SQLModel, table=True):
     nom_famille: str = Field(max_length=100, nullable=False)
     date_naissance: date = Field(nullable=False)
     heure_naissance: Optional[time] = Field(default=None, nullable=True)
-    lieu_naissance: Optional[str] = Field(default=None, max_length=200, nullable=True)
+    pays_naissance: Optional[str] = Field(default=None, max_length=100, nullable=True)
+    fuseau_horaire_naissance: Optional[str] = Field(default=None, max_length=50, nullable=True)
 
     # Résultats algorithmiques — JSONB flexible
     numerologie: Dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))

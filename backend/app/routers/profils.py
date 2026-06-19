@@ -45,7 +45,8 @@ async def generate_profil(
     human_design = calculer_human_design(
         payload.date_naissance,
         payload.heure_naissance,
-        payload.lieu_naissance,
+        payload.pays_naissance,
+        payload.fuseau_horaire_naissance,
     )
     profil_cognitif = calculer_profil_cognitif(payload.reponses_cognitif)
 
@@ -58,7 +59,8 @@ async def generate_profil(
         nom_famille=payload.nom_famille,
         date_naissance=payload.date_naissance,
         heure_naissance=payload.heure_naissance,
-        lieu_naissance=payload.lieu_naissance,
+        pays_naissance=payload.pays_naissance,
+        fuseau_horaire_naissance=payload.fuseau_horaire_naissance,
         numerologie=numerologie,
         profil_cognitif=profil_cognitif,
         human_design=human_design,
