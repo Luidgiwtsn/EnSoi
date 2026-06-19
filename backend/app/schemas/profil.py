@@ -6,7 +6,6 @@ from pydantic_core import PydanticCustomError
 
 class ProfilRequest(BaseModel):
     """Données brutes envoyées par le frontend."""
-
     prenom: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-ZÀ-ÿ\s\-]+$')
     nom_famille: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-ZÀ-ÿ\s\-]+$')
     date_naissance: date
@@ -28,7 +27,6 @@ class ProfilRequest(BaseModel):
     @field_validator('date_naissance')
     @classmethod
     def valider_date(cls, v: date) -> date:
-        # Évaluation dynamique de la date du jour à la seconde de l'appel
         if v > date.today():
             raise PydanticCustomError(
                 "future_date",
@@ -37,36 +35,37 @@ class ProfilRequest(BaseModel):
         return v
 
     @field_validator('pays_naissance')
-@classmethod
-def valider_pays(cls, v: Optional[str]) -> Optional[str]:
-    if v is None:
+    @classmethod
+    def valider_pays(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        import pycountry
+        pays = pycountry.countries.get(name=v) or pycountry.countries.get(alpha_2=v.upper())
+        if pays is None:
+            raise PydanticCustomError(
+                "pays_invalide",
+                "Le pays fourni n'est pas reconnu"
+            )
         return v
-    import pycountry
-    pays = pycountry.countries.get(name=v) or pycountry.countries.get(alpha_2=v.upper())
-    if pays is None:
-        raise PydanticCustomError(
-            "pays_invalide",
-            "Le pays fourni n'est pas reconnu"
-        )
-    return v
 
-@field_validator('fuseau_horaire_naissance')
-@classmethod
-def valider_fuseau(cls, v: Optional[str]) -> Optional[str]:
-    if v is None:
+    @field_validator('fuseau_horaire_naissance')
+    @classmethod
+    def valider_fuseau(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        import pytz
+        if v not in pytz.all_timezones:
+            raise PydanticCustomError(
+                "fuseau_invalide",
+                "Le fuseau horaire fourni n'est pas reconnu"
+            )
         return v
-    import pytz
-    if v not in pytz.all_timezones:
-        raise PydanticCustomError(
-            "fuseau_invalide",
-            "Le fuseau horaire fourni n'est pas reconnu"
-        )
-    return v
+
 
 class DimensionCognitive(BaseModel):
     dominant: str
-    lettre: str = Field(max_length=1)  # Contrainte pour forcer 'I', 'E', 'N', etc.
-    score_pourcentage: int = Field(ge=51, le=100)  # Un score dominant fait minimum 51% suite à notre optimisation
+    lettre: str = Field(max_length=1)
+    score_pourcentage: int = Field(ge=51, le=100)
 
 
 class DimensionsCognitives(BaseModel):
@@ -77,7 +76,7 @@ class DimensionsCognitives(BaseModel):
 
 
 class ProfilCognitifResult(BaseModel):
-    type_cognitif: str = Field(min_length=4, max_length=4)  # Ex: INFJ
+    type_cognitif: str = Field(min_length=4, max_length=4)
     nom_profil: str
     dimensions: DimensionsCognitives
 
@@ -99,8 +98,6 @@ class HumanDesignResult(BaseModel):
 
 class ProfilComplet(BaseModel):
     """Réponse complète retournée au frontend."""
-    
-    # Syntaxe moderne Pydantic V2 pour la configuration globale
     model_config = ConfigDict(from_attributes=True)
 
     id: int
