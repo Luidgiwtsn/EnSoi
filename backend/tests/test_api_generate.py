@@ -1,5 +1,5 @@
 """Tests d'intégration — POST /generate et endpoints /profils."""
-from unittest.mock import AsyncMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -48,13 +48,13 @@ class TestGenerateNominaux:
 
     def test_generate_retourne_200(self, client):
         with patch("app.routers.profils.GroqService") as mock_cls:
-            mock_cls.return_value.generer_synthese = AsyncMock(return_value="Synthèse test.")
+            mock_cls.return_value.generer_synthese = MagicMock(return_value="Synthèse test.")
             response = client.post("/generate", json=PAYLOAD_VALIDE)
         assert response.status_code == 200
 
     def test_generate_retourne_profil_complet(self, client):
         with patch("app.routers.profils.GroqService") as mock_cls:
-            mock_cls.return_value.generer_synthese = AsyncMock(return_value="Synthèse test.")
+            mock_cls.return_value.generer_synthese = MagicMock(return_value="Synthèse test.")
             response = client.post("/generate", json=PAYLOAD_VALIDE)
         data = response.json()
         assert "numerologie" in data
@@ -64,13 +64,13 @@ class TestGenerateNominaux:
 
     def test_generate_statut_complet_si_groq_ok(self, client):
         with patch("app.routers.profils.GroqService") as mock_cls:
-            mock_cls.return_value.generer_synthese = AsyncMock(return_value="Synthèse test.")
+            mock_cls.return_value.generer_synthese = MagicMock(return_value="Synthèse test.")
             response = client.post("/generate", json=PAYLOAD_VALIDE)
         assert response.json()["statut"] == "complet"
 
     def test_generate_statut_partiel_si_groq_indisponible(self, client):
         with patch("app.routers.profils.GroqService") as mock_cls:
-            mock_cls.return_value.generer_synthese = AsyncMock(side_effect=Exception("timeout"))
+            mock_cls.return_value.generer_synthese = MagicMock(return_value=None)
             response = client.post("/generate", json=PAYLOAD_VALIDE)
         data = response.json()
         assert data["statut"] == "partiel"
@@ -79,7 +79,7 @@ class TestGenerateNominaux:
     def test_generate_avec_heure_et_lieu(self, client):
         payload = {**PAYLOAD_VALIDE, "heure_naissance": "14:30:00", "lieu_naissance": "Paris"}
         with patch("app.routers.profils.GroqService") as mock_cls:
-            mock_cls.return_value.generer_synthese = AsyncMock(return_value="Synthèse.")
+            mock_cls.return_value.generer_synthese = MagicMock(return_value="Synthèse.")
             response = client.post("/generate", json=payload)
         assert response.status_code == 200
 
@@ -125,7 +125,7 @@ class TestGetProfils:
     def test_get_profils_retourne_liste(self, client):
         token = _register_and_login(client)
         with patch("app.routers.profils.GroqService") as mock_cls:
-            mock_cls.return_value.generer_synthese = AsyncMock(return_value=None)
+            mock_cls.return_value.generer_synthese = MagicMock(return_value=None)
             client.post("/generate", json=PAYLOAD_VALIDE, headers=_auth_headers(token))
         response = client.get("/profils", headers=_auth_headers(token))
         assert response.status_code == 200
@@ -134,7 +134,7 @@ class TestGetProfils:
 
     def test_get_profil_par_id(self, client):
         with patch("app.routers.profils.GroqService") as mock_cls:
-            mock_cls.return_value.generer_synthese = AsyncMock(return_value=None)
+            mock_cls.return_value.generer_synthese = MagicMock(return_value=None)
             profil_id = client.post("/generate", json=PAYLOAD_VALIDE).json()["id"]
         response = client.get(f"/profils/{profil_id}")
         assert response.status_code == 200
@@ -158,7 +158,7 @@ class TestDeleteProfil:
     def test_delete_profil_retourne_200(self, client):
         token = _register_and_login(client)
         with patch("app.routers.profils.GroqService") as mock_cls:
-            mock_cls.return_value.generer_synthese = AsyncMock(return_value=None)
+            mock_cls.return_value.generer_synthese = MagicMock(return_value=None)
             profil_id = client.post(
                 "/generate", json=PAYLOAD_VALIDE, headers=_auth_headers(token)
             ).json()["id"]
@@ -168,7 +168,7 @@ class TestDeleteProfil:
     def test_delete_profil_supprime_de_la_bdd(self, client):
         token = _register_and_login(client)
         with patch("app.routers.profils.GroqService") as mock_cls:
-            mock_cls.return_value.generer_synthese = AsyncMock(return_value=None)
+            mock_cls.return_value.generer_synthese = MagicMock(return_value=None)
             profil_id = client.post(
                 "/generate", json=PAYLOAD_VALIDE, headers=_auth_headers(token)
             ).json()["id"]

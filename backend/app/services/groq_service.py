@@ -11,7 +11,7 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 
-# Circuit breaker — état partagé au niveau du module (singleton de processus)
+# Circuit breaker - état partagé au niveau du module (singleton de processus)
 
 _cb_failures: int = 0
 _cb_opened_at: Optional[float] = None
@@ -79,6 +79,8 @@ def _construire_prompt(profil_data: dict) -> str:
     strategie = _sanitize(hd.get("strategie", ""))
     autorite = _sanitize(hd.get("autorite", ""))
     profil_hd = _sanitize(hd.get("profil", ""), max_len=50)
+    signature = _sanitize(hd.get("signature", ""), max_len=50)
+    pas_soi = _sanitize(hd.get("pas_soi", ""), max_len=50)
 
     cognitif = profil_data.get("profil_cognitif", {})
     nom_profil = _sanitize(cognitif.get("nom_profil", ""))
@@ -139,6 +141,8 @@ Human Design :
   Stratégie : {strategie}
   Autorité : {autorite}
   Profil : {profil_hd}
+  Signature (état naturel) : {signature}
+  Pas-Soi (signal d'alerte) : {pas_soi}
 
 Profil cognitif :
   Type : {type_cognitif} — {nom_profil}
