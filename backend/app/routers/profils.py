@@ -72,17 +72,22 @@ async def generate_profil(
     db.refresh(profil)  # garantit profil.id disponible avant appel Groq
 
     # 3. Synthèse IA via Groq (timeout 8s, circuit breaker)
+    # Le service retourne None si Groq est indisponible (circuit breaker
+    # ou timeout) — pas une exception. statut='partiel' dans ce cas.
     groq_service = GroqService()
-    try:
-        synthese_ia = await groq_service.generer_synthese(
-            prenom=payload.prenom,
-            numerologie=numerologie,
-            human_design=human_design,
-            profil_cognitif=profil_cognitif,
-        )
+    profil_data = {
+        "prenom": payload.prenom,
+        "nom_famille": payload.nom_famille,
+        "date_naissance": payload.date_naissance.isoformat(),
+        "numerologie": numerologie,
+        "human_design": human_design,
+        "profil_cognitif": profil_cognitif,
+    }
+    synthese_ia = groq_service.generer_synthese(profil_data)
+    if synthese_ia is not None:
         profil.synthese_ia = synthese_ia
         profil.statut = "complet"
-    except Exception:
+    else:
         profil.statut = "partiel"
 
     db.add(profil)
