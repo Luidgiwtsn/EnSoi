@@ -36,6 +36,8 @@ from app.services.human_design.centers import calculer_centres_definis
 from app.services.human_design.type_hd import (
     determiner_type,
     determiner_strategie,
+    determiner_signature,
+    determiner_non_soi,
 )
 from app.services.human_design.authority import determiner_autorite
 from app.services.human_design.profile_hd import determiner_profil
@@ -70,6 +72,8 @@ def calculer(
         return {
             "type_hd": "",
             "strategie": "",
+            "signature": "",
+            "pas_soi": "",
             "profil": "",
             "autorite": "",
             "donnees_completes": False,
@@ -93,6 +97,8 @@ def calculer(
     # 5. Détermination du Type et de sa Stratégie
     type_hd = determiner_type(canaux_actifs)
     strategie = determiner_strategie(type_hd)
+    signature = determiner_signature(type_hd)
+    pas_soi = determiner_non_soi(type_hd)
 
     # 6. Détermination de l'Autorité (hiérarchie stricte des centres)
     autorite = determiner_autorite(canaux_actifs)
@@ -107,6 +113,8 @@ def calculer(
     return {
         "type_hd": type_hd,
         "strategie": strategie,
+        "signature": signature,
+        "pas_soi": pas_soi,
         "profil": profil_str,
         "autorite": autorite,
         "donnees_completes": True,
