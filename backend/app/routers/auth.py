@@ -5,13 +5,14 @@ Endpoints publics (pas de token requis sauf /auth/logout et /auth/change-passwor
 
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from app.database import get_db as get_session
 from app.models.user import User
+from app.rate_limiter import limiter
 from app.schemas.auth import Token, UserCreate, UserLogin, ChangePasswordRequest
 from app.services.auth import (
     hash_password,
@@ -178,7 +179,9 @@ def register(
     response_model=Token,
     summary="Connexion utilisateur",
 )
+@limiter.limit("5/minute")
 def login(
+    request: Request,
     body: UserLogin,
     session: Annotated[Session, Depends(get_session)],
 ) -> Token:

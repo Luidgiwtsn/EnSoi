@@ -1,6 +1,12 @@
 """Fixtures pytest partagées."""
 
 import pytest
+from app.rate_limiter import limiter
+
+# Désactivation globale du rate limiting pour la suite de tests existants.
+# Les tests spécifiques au rate limiting (test_rate_limiting.py) le réactivent
+# explicitement via un fixture pour leurs assertions.
+limiter.enabled = False
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, Session, create_engine
 from sqlmodel.pool import StaticPool
