@@ -16,6 +16,7 @@ from app.services.numerologie import calculer as calculer_numerologie
 from app.services.human_design import calculer as calculer_human_design
 from app.services.profil_cognitif import calculer as calculer_profil_cognitif
 from app.services.groq_service import GroqService
+from app.rate_limiter import limiter
 from app.config import get_settings
 
 router = APIRouter()
@@ -28,9 +29,10 @@ settings = get_settings()
 
 
 @router.post("/generate", response_model=ProfilComplet, status_code=status.HTTP_200_OK)
+@limiter.limit("3/minute")
 async def generate_profil(
-    payload: ProfilRequest,
     request: Request,
+    payload: ProfilRequest,
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user_optional),
 ):
