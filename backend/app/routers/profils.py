@@ -19,6 +19,7 @@ from app.services.groq_service import GroqService
 from app.config import get_settings
 
 router = APIRouter()
+public_router = APIRouter()  # routes exposées sans préfixe /api (lien de partage)
 settings = get_settings()
 
 
@@ -238,7 +239,7 @@ def share_profil(
 # GET /public/{token} - accès public sans authentification
 
 
-@router.get("/public/{token}", response_model=ProfilComplet)
+@public_router.get("/public/{token}", response_model=ProfilComplet)
 def get_profil_public(
     token: str,
     db: Session = Depends(get_db),
@@ -270,23 +271,3 @@ def get_profil_public(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profil introuvable")
 
     return profil
-
-
-
-# GET /api/health
-
-
-@router.get("/health")
-def health_check(db: Session = Depends(get_db)):
-    """Vérifie que l'API et la base de données sont opérationnelles."""
-    try:
-        db.exec(select(User).limit(1))
-        db_status = "ok"
-    except Exception:
-        db_status = "error"
-
-    return {
-        "status": "ok",
-        "version": "1.0.0",
-        "database": db_status,
-    }
