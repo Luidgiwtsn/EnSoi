@@ -6,9 +6,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
+
+from app.rate_limiter import limiter
 from sqlmodel import Session, text
 
 from app.config import settings
@@ -20,7 +21,6 @@ from app.routers.users import router as users_router
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ensoi")
 
-limiter = Limiter(key_func=get_remote_address)
 
 
 @asynccontextmanager
