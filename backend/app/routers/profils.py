@@ -14,7 +14,10 @@ from app.routers.auth import get_current_user, get_current_user_optional
 from app.schemas.profil import ProfilRequest, ProfilComplet
 from app.services.numerologie import calculer as calculer_numerologie
 from app.services.human_design import calculer as calculer_human_design
-from app.services.profil_cognitif import calculer as calculer_profil_cognitif
+from app.services.profil_cognitif import (
+    calculer as calculer_profil_cognitif,
+    get_questions as get_questions_cognitif,
+)
 from app.services.groq_service import GroqService
 from app.rate_limiter import limiter
 from app.config import get_settings
@@ -24,6 +27,27 @@ public_router = APIRouter()  # routes exposées sans préfixe /api (lien de part
 settings = get_settings()
 
 
+# GET /api/cognitif/questions  - liste des 12 questions du questionnaire
+
+@router.get("/cognitif/questions")
+def list_questions_cognitif():
+    """
+    Retourne la liste des 12 questions du questionnaire cognitif.
+    Endpoint public (pas d'authentification requise) - appelé par le frontend
+    au démarrage du questionnaire.
+
+    Source unique de vérité : les questions sont définies dans la constante
+    QUESTIONS de app/services/profil_cognitif.py. Toute modification se fait
+    dans ce service, le frontend récupère automatiquement la nouvelle version.
+
+    Chaque question contient :
+    - id (int) : numéro 1..12
+    - axe (str) : energie | perception | decision | organisation
+    - texte (str) : énoncé de la question
+    - pole_a (str) : énoncé du pôle à gauche du curseur (réponse 1)
+    - pole_b (str) : énoncé du pôle à droite du curseur (réponse 5)
+    """
+    return {"questions": get_questions_cognitif()}
 
 # POST /api/generate
 
