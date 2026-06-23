@@ -11,7 +11,8 @@ class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(max_length=255, unique=True, nullable=False, index=True)
     hashed_password: str = Field(max_length=255, nullable=False)
-    nom: str = Field(max_length=100, nullable=False)
+    prenom: str = Field(max_length=100, nullable=False)
+    nom_famille: str = Field(max_length=100, nullable=False)
     date_naissance: date = Field(nullable=False)
     is_active: bool = Field(default=True)
     refresh_token: Optional[str] = Field(default=None)  # Hashé SHA-256
