@@ -23,8 +23,14 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 class UserUpdate(BaseModel):
-    """PATCH /users/me - nom et/ou date de naissance (tous optionnels)."""
-    nom: str | None = Field(
+    """PATCH /users/me - prenom, nom_famille et/ou date de naissance (tous optionnels)."""
+    prenom: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=100,
+        pattern=r"^[a-zA-ZÀ-ÿ\s\-]+$",
+    )
+    nom_famille: str | None = Field(
         default=None,
         min_length=1,
         max_length=100,
@@ -47,12 +53,13 @@ class DeleteAccount(BaseModel):
 class UserResponse(BaseModel):
     """Réponse standard pour les infos utilisateur."""
     id: int
-    nom: str
+    prenom: str
+    nom_famille: str
     email: str
     date_naissance: date
 
     model_config = {
-        "from_attributes": True  # Permet de retourner directement l'objet SQLModel User
+        "from_attributes": True
     }
 
 
@@ -98,11 +105,14 @@ def update_me(
     if not update_data:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Au moins un champ à modifier doit être fourni (nom ou date_naissance).",
+            detail="Au moins un champ à modifier doit être fourni (prenom, nom_famille ou date_naissance).",
         )
 
-    if "nom" in update_data and body.nom:
-        current_user.nom = body.nom.strip()
+    if "prenom" in update_data and body.prenom:
+        current_user.prenom = body.prenom.strip()
+
+    if "nom_famille" in update_data and body.nom_famille:
+        current_user.nom_famille = body.nom_famille.strip()
 
     if "date_naissance" in update_data:
         current_user.date_naissance = body.date_naissance
