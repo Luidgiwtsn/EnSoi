@@ -24,7 +24,8 @@ def _register_and_login(client) -> str:
     Utilisé pour les endpoints protégés (GET /profils, DELETE, etc.)
     """
     client.post("/auth/register", json={
-        "nom": "Alice Test",
+        "prenom": "Alice",
+        "nom_famille": "Test",
         "email": "alice@test.com",
         "password": "Secret123!",
         "date_naissance": "1990-06-12",

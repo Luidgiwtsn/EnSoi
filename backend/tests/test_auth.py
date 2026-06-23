@@ -7,7 +7,8 @@ from fastapi.testclient import TestClient
 
 
 VALID_USER = {
-    "nom": "Alice Martin",
+    "prenom": "Alice",
+    "nom_famille": "Martin",
     "email": "alice@ensoi.fr",
     "password": "Motdepasse1",
     "date_naissance": "1990-06-12",
