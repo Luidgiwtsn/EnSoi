@@ -152,7 +152,8 @@ def register(
     user = User(
         email=body.email.lower().strip(),
         hashed_password=hashed_pw,
-        nom=body.nom.strip(),
+        prenom=body.prenom.strip(),
+        nom_famille=body.nom_famille.strip(),
         date_naissance=body.date_naissance,
     )
     session.add(user)
