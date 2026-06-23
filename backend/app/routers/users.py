@@ -24,8 +24,13 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 class UserUpdate(BaseModel):
     """PATCH /users/me - nom et/ou date de naissance (tous optionnels)."""
-    nom: str | None = Field(default=None, min_length=1)
-    date_naissance: date | None = None  # Pydantic valide automatiquement le format ISO
+    nom: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=100,
+        pattern=r"^[a-zA-ZÀ-ÿ\s\-]+$",
+    )
+    date_naissance: date | None = None
 
 
 class EmailUpdate(BaseModel):
