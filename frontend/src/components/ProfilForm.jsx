@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Step1Infos from './Step1Infos';
+import Step2HumanDesign from './Step2HumanDesign';
 
 /**
  * Wizard de génération de profil en 3 étapes.
@@ -141,13 +142,11 @@ export default function ProfilForm({ onSubmit, submitting = false }) {
         )}
 
         {step === 2 && (
-          <div>
-            <h2 className="text-2xl font-serif mb-4">Données Human Design (optionnel)</h2>
-            <p className="text-ensoi-muted">
-              [À implémenter au commit 3 — heure, pays, fuseau horaire]
-            </p>
-          </div>
-        )}
+  <Step2HumanDesign
+    values={formData}
+    onChange={updateField}
+  />
+)}
 
         {step === 3 && (
           <div>
