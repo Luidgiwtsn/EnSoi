@@ -28,13 +28,13 @@ class UserUpdate(BaseModel):
         default=None,
         min_length=1,
         max_length=100,
-        pattern=r"^[a-zA-ZÀ-ÿ\s\-]+$",
+        pattern=r"^[a-zA-ZÀ-ÿ \-]+$",
     )
     nom_famille: str | None = Field(
         default=None,
         min_length=1,
         max_length=100,
-        pattern=r"^[a-zA-ZÀ-ÿ\s\-]+$",
+        pattern=r"^[a-zA-ZÀ-ÿ \-]+$",
     )
     date_naissance: date | None = None
 

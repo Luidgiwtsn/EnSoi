@@ -8,13 +8,13 @@ class UserCreate(BaseModel):
     prenom: str = Field(
         min_length=1,
         max_length=100,
-        pattern=r"^[a-zA-ZÀ-ÿ\s\-]+$",
+        pattern=r"^[a-zA-ZÀ-ÿ \-]+$",
         description="Prénom : lettres (accents inclus), espaces et tirets uniquement.",
     )
     nom_famille: str = Field(
         min_length=1,
         max_length=100,
-        pattern=r"^[a-zA-ZÀ-ÿ\s\-]+$",
+        pattern=r"^[a-zA-ZÀ-ÿ \-]+$",
         description="Nom de famille : lettres (accents inclus), espaces et tirets uniquement.",
     )
     email: EmailStr
