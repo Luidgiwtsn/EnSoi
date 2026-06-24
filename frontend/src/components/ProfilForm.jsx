@@ -1,18 +1,19 @@
 import { useState } from 'react';
+import Step1Infos from './Step1Infos';
 
 /**
  * Wizard de génération de profil en 3 étapes.
  *
- * Étape 1 - Informations personnelles (prénom, nom de famille, date)
- * Étape 2 - Données Human Design optionnelles (heure, pays, fuseau)
- * Étape 3 - Questionnaire cognitif (12 curseurs)
+ * Étape 1 — Informations personnelles (prénom, nom de famille, date)
+ * Étape 2 — Données Human Design optionnelles (heure, pays, fuseau)
+ * Étape 3 — Questionnaire cognitif (12 curseurs)
  *
  * État détenu par ce composant. À la dernière étape, le parent reçoit
  * les données via onSubmit (props) pour appeler /api/generate.
  *
  * Props :
- *   - onSubmit: (formData) => void - appelé au clic sur "Générer" à l'étape 3
- *   - submitting: boolean - désactive le bouton final pendant l'appel API
+ *   - onSubmit: (formData) => void — appelé au clic sur "Générer" à l'étape 3
+ *   - submitting: boolean — désactive le bouton final pendant l'appel API
  */
 export default function ProfilForm({ onSubmit, submitting = false }) {
   const [step, setStep] = useState(1);
@@ -25,13 +26,73 @@ export default function ProfilForm({ onSubmit, submitting = false }) {
     fuseau_horaire_naissance: '',
     reponses_cognitif: Array(12).fill(null),
   });
+  const [errors, setErrors] = useState({});
 
   const totalSteps = 3;
 
-  // TODO commits 2/3/4 : ajouter une vraie validation par étape.
-  // Pour l'instant on autorise la navigation libre pour tester le squelette.
-  function canGoNext() {
+  // Met à jour un champ du formulaire et efface son erreur s'il y en avait une.
+  function updateField(name, value) {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  }
+
+  /**
+   * Validation d'un champ individuel.
+   * Reflète exactement la validation Pydantic du backend (ProfilRequest) :
+   *   - prenom/nom_famille : 1-100 chars, regex lettres+accents+espaces+tirets
+   *   - date_naissance : non vide, pas dans le futur
+   */
+  function validerChamp(name, value) {
+    const regexNom = /^[a-zA-ZÀ-ÿ \-]+$/;
+
+    switch (name) {
+      case 'prenom':
+      case 'nom_famille':
+        if (!value || value.trim() === '') {
+          return 'Ce champ est obligatoire.';
+        }
+        if (value.length > 100) {
+          return 'Maximum 100 caractères.';
+        }
+        if (!regexNom.test(value)) {
+          return 'Lettres, accents, espaces et tirets uniquement.';
+        }
+        return undefined;
+
+      case 'date_naissance':
+        if (!value) {
+          return 'Ce champ est obligatoire.';
+        }
+        if (new Date(value) > new Date()) {
+          return 'La date ne peut pas être dans le futur.';
+        }
+        return undefined;
+
+      default:
+        return undefined;
+    }
+  }
+
+  // Valide un champ au blur et met l'erreur à jour.
+  function handleBlur(name) {
+    const erreur = validerChamp(name, formData[name]);
+    setErrors((prev) => ({ ...prev, [name]: erreur }));
+  }
+
+  // Valide tous les champs requis de l'étape courante.
+  function etapeValide() {
+    if (step === 1) {
+      const champs = ['prenom', 'nom_famille', 'date_naissance'];
+      return champs.every((c) => !validerChamp(c, formData[c]));
+    }
+    // TODO commits 3 et 4 : valider les étapes 2 et 3.
     return true;
+  }
+
+  function canGoNext() {
+    return etapeValide();
   }
 
   function handleNext() {
@@ -68,22 +129,22 @@ export default function ProfilForm({ onSubmit, submitting = false }) {
         </div>
       </div>
 
-      {/* Contenu de l'étape — placeholders pour ce commit */}
+      {/* Contenu de l'étape */}
       <div className="min-h-[300px]">
         {step === 1 && (
-          <div>
-            <h2 className="text-2xl font-serif mb-4">Vos informations</h2>
-            <p className="text-ensoi-muted">
-              [À implémenter au commit 2 - prénom, nom de famille, date de naissance]
-            </p>
-          </div>
+          <Step1Infos
+            values={formData}
+            onChange={updateField}
+            errors={errors}
+            onBlur={handleBlur}
+          />
         )}
 
         {step === 2 && (
           <div>
             <h2 className="text-2xl font-serif mb-4">Données Human Design (optionnel)</h2>
             <p className="text-ensoi-muted">
-              [À implémenter au commit 3 - heure, pays, fuseau horaire]
+              [À implémenter au commit 3 — heure, pays, fuseau horaire]
             </p>
           </div>
         )}
@@ -92,7 +153,7 @@ export default function ProfilForm({ onSubmit, submitting = false }) {
           <div>
             <h2 className="text-2xl font-serif mb-4">Questionnaire cognitif</h2>
             <p className="text-ensoi-muted">
-              [À implémenter au commit 4 - 12 curseurs via CognitiveQuestionnaire]
+              [À implémenter au commit 4 — 12 curseurs via CognitiveQuestionnaire]
             </p>
           </div>
         )}
