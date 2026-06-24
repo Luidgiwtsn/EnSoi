@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import date, datetime, time
 from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_core import PydanticCustomError
@@ -112,3 +112,4 @@ class ProfilComplet(BaseModel):
     human_design: HumanDesignResult
     synthese_ia: Optional[str] = None
     statut: str
+    created_at: datetime
