@@ -91,6 +91,8 @@ export const profilsApi = {
   public: (token) => client.get(`/public/${token}`),
   health: () => client.get('/api/health'),
   cognitif: () => client.get('/api/cognitif/questions'),
+  countries: () => client.get('/api/countries'),
+  timezones: () => client.get('/api/timezones'),
 };
 
 export default client;
