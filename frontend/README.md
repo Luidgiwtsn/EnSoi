@@ -6,7 +6,7 @@ Interface utilisateur React de l'application EnSoi. Consomme l'API backend FastA
 
 ---
 
-## 🛠 Stack
+##  Stack
 
 | Outil | Version | Rôle |
 |-------|---------|------|
@@ -77,7 +77,7 @@ Voir le [README racine](../README.md) pour la liste complète des endpoints back
 
 ---
 
-## 🗺 Roadmap frontend
+##  Roadmap frontend
 
 Branches restantes du sprint 2 :
 
