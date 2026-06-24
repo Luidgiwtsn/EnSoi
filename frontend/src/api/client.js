@@ -90,6 +90,7 @@ export const profilsApi = {
   share: (id) => client.post(`/api/profils/${id}/share`),
   public: (token) => client.get(`/public/${token}`),
   health: () => client.get('/api/health'),
+  cognitif: () => client.get('/api/cognitif/questions'),
 };
 
 export default client;
