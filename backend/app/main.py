@@ -17,6 +17,8 @@ from app.database import create_db_and_tables, engine
 from app.routers.auth import router as auth_router
 from app.routers.profils import router as profils_router, public_router
 from app.routers.users import router as users_router
+from app.routers import auth, profils, users, reference
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ensoi")
@@ -67,6 +69,7 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(profils_router, prefix="/api")
 app.include_router(public_router)
+app.include_router(reference.router)
 
 
 @app.get("/api/health", tags=["Système"])

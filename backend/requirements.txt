@@ -21,3 +21,4 @@ bcrypt==4.0.1
 pycountry==26.2.16
 pyswisseph==2.10.3.2
 pytz==2026.2
+babel==2.16.0
