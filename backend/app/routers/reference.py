@@ -7,7 +7,7 @@ Endpoints publics — pas d'auth, pas de rate limit.
 
 from fastapi import APIRouter
 
-from app.services.reference_data import COUNTRIES
+from app.services.reference_data import COUNTRIES, TIMEZONES
 
 router = APIRouter(prefix="/api", tags=["reference"])
 
@@ -24,3 +24,15 @@ def list_countries() -> dict:
     `pays_naissance` de POST /api/generate.
     """
     return {"countries": COUNTRIES}
+
+@router.get("/timezones")
+def list_timezones() -> dict:
+    """
+    Retourne la liste des fuseaux horaires IANA triée alphabétiquement.
+
+    Format : {"timezones": ["Africa/Abidjan", "Europe/Paris", ...]}
+
+    Cohérent avec pytz.all_timezones utilisé par la validation backend
+    du champ fuseau_horaire_naissance du ProfilRequest.
+    """
+    return {"timezones": TIMEZONES}

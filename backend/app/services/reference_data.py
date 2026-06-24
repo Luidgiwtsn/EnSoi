@@ -11,6 +11,7 @@ instance FastAPI.
 """
 
 import pycountry
+import pytz
 from babel import Locale
 
 
@@ -40,3 +41,20 @@ def _build_countries_list() -> list[dict]:
 
 # Cache mémoire : calculé une fois à l'import du module.
 COUNTRIES: list[dict] = _build_countries_list()
+
+
+def _build_timezones_list() -> list[str]:
+    """
+    Construit la liste triée des fuseaux horaires IANA.
+
+    Format : ["Africa/Abidjan", "Africa/Accra", ..., "Europe/Paris", ...]
+
+    Cohérent avec la validation backend : pytz.all_timezones est exactement
+    la source utilisée par la validation du champ fuseau_horaire_naissance
+    du ProfilRequest.
+    """
+    return sorted(pytz.all_timezones)
+
+
+# Cache mémoire : calculé une fois à l'import du module.
+TIMEZONES: list[str] = _build_timezones_list()
