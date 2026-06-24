@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import GenererPage from './pages/GenererPage';
+import ProfilPage from './pages/ProfilPage';
 
 function Home() {
   return (
@@ -44,7 +45,7 @@ export default function App() {
           <Route path="/login" element={<Placeholder title="Connexion" />} />
           <Route path="/register" element={<Placeholder title="Inscription" />} />
           <Route path="/generer" element={<GenererPage />} />
-          <Route path="/profils/:id" element={<Placeholder title="Détail du profil" />} />
+          <Route path="/profils/:id" element={<ProfilPage />} />
           <Route path="/dashboard" element={<Placeholder title="Mon historique" />} />
           <Route path="/public/:token" element={<Placeholder title="Profil partagé" />} />
           <Route path="*" element={<NotFound />} />
