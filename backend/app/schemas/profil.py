@@ -6,8 +6,8 @@ from pydantic_core import PydanticCustomError
 
 class ProfilRequest(BaseModel):
     """Données brutes envoyées par le frontend."""
-    prenom: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-ZÀ-ÿ\s\-]+$')
-    nom_famille: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-ZÀ-ÿ\s\-]+$')
+    prenom: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-ZÀ-ÿ \-]+$')
+    nom_famille: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-ZÀ-ÿ \-]+$')
     date_naissance: date
     heure_naissance: Optional[time] = None
     pays_naissance: Optional[str] = Field(default=None, max_length=100)
