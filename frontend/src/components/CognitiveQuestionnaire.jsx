@@ -1,22 +1,20 @@
 import { useState, useEffect } from 'react';
 import { profilsApi } from '../api/client';
 
-/**
- * Questionnaire cognitif contrôlé.
- *
- * Charge les 12 questions depuis le backend (source unique de vérité) et
- * rend 12 curseurs 1-5. Le parent détient l'état des réponses.
- *
- * Props:
- *   - value: (number | null)[] de longueur 12 — état des réponses
- *   - onChange: (nouvelles_reponses) => void — appelé à chaque interaction
- */
+// Questionnaire cognitif controle.
+// Charge les 12 questions depuis le backend et rend 12 curseurs 1 a 5.
+// Les questions sont regroupees par axe (Energie, Perception, Decision,
+// Organisation) avec un sous-titre au-dessus du premier item du groupe.
+//
+// Props:
+//   value    : (number | null)[12] etat des reponses
+//   onChange : (nouvelles_reponses) => void appele a chaque interaction
+
 export default function CognitiveQuestionnaire({ value, onChange }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Récupère les questions au montage et à chaque tentative de rechargement.
   useEffect(() => {
     let annule = false;
 
@@ -39,30 +37,25 @@ export default function CognitiveQuestionnaire({ value, onChange }) {
 
     chargerQuestions();
 
-    // Nettoyage : si le composant se démonte avant la fin du fetch,
-    // on évite de mettre à jour un état qui n'existe plus.
     return () => {
       annule = true;
     };
   }, []);
 
-  // Met à jour une réponse précise sans muter le tableau existant.
   function handleSliderChange(index, nouvelleValeur) {
     const nouvellesReponses = [...value];
     nouvellesReponses[index] = nouvelleValeur;
     onChange(nouvellesReponses);
   }
 
-  // --- Rendu conditionnel : loading ---
   if (loading) {
     return (
       <div className="p-6 text-center text-gray-500">
-        Chargement des questions…
+        Chargement des questions...
       </div>
     );
   }
 
-  // --- Rendu conditionnel : erreur ---
   if (error) {
     return (
       <div className="p-6 text-center">
@@ -74,54 +67,61 @@ export default function CognitiveQuestionnaire({ value, onChange }) {
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          Réessayer
+          Reessayer
         </button>
       </div>
     );
   }
 
-  // --- Rendu principal : les 12 questions ---
   const nbRepondues = value.filter((r) => r !== null).length;
 
   return (
-    <div className="space-y-6">
-      <div className="text-sm text-gray-600">
-        {nbRepondues} / {questions.length} questions répondues
+    <div className="space-y-2">
+      <div className="text-sm text-gray-600 mb-4">
+        {nbRepondues} / {questions.length} questions repondues
       </div>
 
       {questions.map((question, index) => {
         const reponse = value[index];
         const repondue = reponse !== null;
+        const premierDeLaxe = index === 0 || questions[index - 1].axe !== question.axe;
 
         return (
-          <div key={question.id} className="border-b pb-4">
-            <div className="text-xs uppercase text-gray-500 mb-1">
-              Question {index + 1} — Axe : {question.axe}
-            </div>
-            <p className="font-medium mb-3">{question.texte}</p>
-
-            <input
-              type="range"
-              min={1}
-              max={5}
-              step={1}
-              value={reponse ?? 3}
-              onChange={(e) =>
-                handleSliderChange(index, Number(e.target.value))
-              }
-              className={`w-full ${repondue ? 'opacity-100' : 'opacity-40'}`}
-            />
-
-            <div className="flex justify-between text-xs text-gray-600 mt-1">
-              <span>{question.pole_a}</span>
-              <span>{question.pole_b}</span>
-            </div>
-
-            {repondue && (
-              <div className="text-center text-sm mt-1 text-blue-600">
-                Réponse : {reponse}
-              </div>
+          <div key={question.id}>
+            {premierDeLaxe && (
+              <h3 className="text-lg font-serif mt-6 mb-3 text-ensoi-primary">
+                {question.axe}
+              </h3>
             )}
+            <div className="border-b pb-4 mb-3">
+              <div className="text-xs uppercase text-gray-500 mb-1">
+                Question {index + 1}
+              </div>
+              <p className="font-medium mb-3">{question.texte}</p>
+
+              <input
+                type="range"
+                min={1}
+                max={5}
+                step={1}
+                value={reponse ?? 3}
+                onChange={(e) =>
+                  handleSliderChange(index, Number(e.target.value))
+                }
+                className={`w-full ${repondue ? 'opacity-100' : 'opacity-40'}`}
+              />
+
+              <div className="flex justify-between text-xs text-gray-600 mt-1">
+                <span>{question.pole_a}</span>
+                <span>{question.pole_b}</span>
+              </div>
+
+              {repondue && (
+                <div className="text-center text-sm mt-1 text-blue-600">
+                  Reponse : {reponse}
+                </div>
+              )}
+            </div>
           </div>
         );
       })}
