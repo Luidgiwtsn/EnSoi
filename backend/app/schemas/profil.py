@@ -112,4 +112,5 @@ class ProfilComplet(BaseModel):
     human_design: HumanDesignResult
     synthese_ia: Optional[str] = None
     statut: str
+    claim_token: Optional[str] = None
     created_at: datetime

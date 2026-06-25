@@ -1,5 +1,6 @@
 # app/routers/profils.py
 import secrets
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -80,6 +81,11 @@ async def generate_profil(
     # 2. Insertion en BDD avec statut pending
     # db.refresh après le premier commit garantit que profil.id est renseigné
     # avant l'appel Groq, même si SQLModel invalide l'objet en mémoire.
+    # claim_token : UUID one-shot genere uniquement pour les profils anonymes.
+    # Permet a un utilisateur de rattacher ce profil a son compte apres inscription.
+    # Pour un utilisateur deja connecte, le profil est immediatement rattache (user_id set)
+    claim_token = str(uuid.uuid4()) if current_user is None else None
+
     profil = Profil(
         user_id=current_user.id if current_user else None,
         prenom=payload.prenom,
@@ -93,6 +99,7 @@ async def generate_profil(
         human_design=human_design,
         synthese_ia=None,
         statut="pending",
+        claim_token=claim_token,
     )
     db.add(profil)
     db.commit()
