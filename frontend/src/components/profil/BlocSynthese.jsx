@@ -1,0 +1,34 @@
+// Bloc affichant la synthese IA generee par Groq. Affiche la synthese
+// formatee si disponible, sinon un message explicatif.
+//
+// Props :
+//   synthese : string | null
+//   statut   : 'complet' | 'partiel'
+
+export default function BlocSynthese({ synthese, statut }) {
+  if (statut === 'partiel' || !synthese) {
+    return (
+      <div className="border rounded-lg p-5 bg-amber-50 border-amber-200">
+        <h3 className="text-xl font-serif mb-2 text-amber-800">
+          Synthese IA non disponible
+        </h3>
+        <p className="text-sm text-amber-700">
+          La synthese personnalisee n'a pas pu etre generee. Les calculs
+          ci-dessus restent complets et valides. Vous pouvez regenerer un
+          profil plus tard pour obtenir la synthese.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border rounded-lg p-5 bg-white">
+      <h3 className="text-xl font-serif mb-3 text-ensoi-primary">
+        Synthese personnalisee
+      </h3>
+      <div className="prose prose-sm max-w-none whitespace-pre-line text-gray-700">
+        {synthese}
+      </div>
+    </div>
+  );
+}

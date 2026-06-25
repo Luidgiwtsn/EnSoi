@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { profilsApi } from '../api/client';
+import CarteNumerologie from '../components/profil/CarteNumerologie';
+import CarteCognitif from '../components/profil/CarteCognitif';
+import CarteHumanDesign from '../components/profil/CarteHumanDesign';
+import BlocSynthese from '../components/profil/BlocSynthese';
 
 export default function ProfilPage() {
   const { id } = useParams();
@@ -63,11 +67,15 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 max-w-6xl">
       <Link to="/" className="text-ensoi-primary hover:underline">
         Retour
       </Link>
-      <p className="text-ensoi-muted mb-6">
+
+      <h1 className="text-3xl font-serif mt-4 mb-1">
+        Profil de {profil.prenom} {profil.nom_famille}
+      </h1>
+      <p className="text-ensoi-muted mb-8">
         Genere le {new Date(profil.created_at).toLocaleString('fr-FR', {
           day: 'numeric',
           month: 'long',
@@ -76,27 +84,17 @@ export default function ProfilPage() {
           minute: '2-digit',
         })}
       </p>
-      <p className="text-ensoi-muted mb-6">
-        Genere le {new Date(profil.created_at).toLocaleDateString('fr-FR')}
-      </p>
 
-      {profil.statut === 'partiel' && (
-        <div className="mb-6 p-4 border border-amber-300 bg-amber-50 rounded">
-          <p className="text-amber-800">
-            La synthese IA n'est pas disponible pour ce profil. Les calculs
-            de numerologie, profil cognitif et Human Design sont complets.
-          </p>
-        </div>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <CarteNumerologie numerologie={profil.numerologie} />
+        <CarteCognitif cognitif={profil.profil_cognitif} />
+        <CarteHumanDesign humanDesign={profil.human_design} />
+      </div>
 
-      <details className="mt-6">
-        <summary className="cursor-pointer text-sm text-ensoi-muted">
-          Voir les donnees brutes du profil (debug temporaire)
-        </summary>
-        <pre className="mt-2 p-4 bg-gray-100 rounded text-xs overflow-auto">
-          {JSON.stringify(profil, null, 2)}
-        </pre>
-      </details>
+      <BlocSynthese
+        synthese={profil.synthese_ia}
+        statut={profil.statut}
+      />
     </div>
   );
 }
