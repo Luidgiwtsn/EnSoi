@@ -228,4 +228,4 @@ Git Flow simplifié : `main` ← `develop` ← `feature/*` / `fix/*` / `docs/*`.
 
 ##  Licence
 
-Projet académique — Stage 2026.
+Projet académique - Stage 2026.
