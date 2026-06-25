@@ -2,23 +2,63 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-// Stockage des tokens EN MÉMOIRE uniquement (jamais localStorage)
+
+// Storage des tokens : access_token en RAM uniquement, refresh_token en localStorage.
+//
+// Justification de ce split :
+// - access_token : court (30 min), sensible (toutes requetes authentifiees).
+//   Garde en RAM uniquement pour limiter la surface d'attaque XSS.
+// - refresh_token : long (illimite jusqu'a logout/rotation), donne en BDD
+//   sous forme hashee. Le stocker en localStorage permet une UX correcte
+//   apres F5 (sinon F5 = deconnexion forcee, comportement frustrant).
+//
+// Le refresh_token est rotatif (one-shot cote backend : a chaque /auth/refresh
+// reussi, le backend invalide l'ancien et en emet un nouveau). Cela limite
+// l'impact d'une fuite : un attaquant qui vole le refresh ne peut l'utiliser
+// qu'une fois avant que la prochaine refresh legitime ne le rende caduc.
+
+
+const REFRESH_KEY = 'ensoi_refresh_token';
+
 let accessToken = null;
-let refreshToken = null;
 let refreshPromise = null;
 
 export const tokenStore = {
-  get access() { return accessToken; },
-  get refresh() { return refreshToken; },
+  get access() {
+    return accessToken;
+  },
+  get refresh() {
+    try {
+      return localStorage.getItem(REFRESH_KEY);
+    } catch {
+      return null;
+    }
+  },
   set(tokens) {
     accessToken = tokens?.access_token ?? null;
-    refreshToken = tokens?.refresh_token ?? null;
+    try {
+      if (tokens?.refresh_token) {
+        localStorage.setItem(REFRESH_KEY, tokens.refresh_token);
+      }
+    } catch {
+      // localStorage indisponible (mode prive, quota) : silencieux
+    }
   },
   clear() {
     accessToken = null;
-    refreshToken = null;
+    try {
+      localStorage.removeItem(REFRESH_KEY);
+    } catch {
+      // silencieux
+    }
   },
-  has() { return Boolean(accessToken); },
+  has() {
+    return Boolean(accessToken);
+  },
+  /** True si un refresh_token est present (utile pour le bootstrap au F5). */
+  hasRefresh() {
+    return Boolean(this.refresh);
+  },
 };
 
 
@@ -93,10 +133,11 @@ client.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const currentRefresh = tokenStore.refresh;
     if (
       error.response?.status !== 401 ||
       originalRequest._retry ||
-      !refreshToken ||
+      !currentRefresh ||
       originalRequest.url?.includes('/auth/refresh')
     ) {
       return Promise.reject(error);
@@ -105,7 +146,7 @@ client.interceptors.response.use(
     try {
       if (!refreshPromise) {
         refreshPromise = axios.post(`${API_URL}/auth/refresh`, {
-          refresh_token: refreshToken,
+          refresh_token: currentRefresh,
         });
       }
       const { data } = await refreshPromise;
