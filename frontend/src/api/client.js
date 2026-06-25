@@ -21,6 +21,61 @@ export const tokenStore = {
   has() { return Boolean(accessToken); },
 };
 
+
+// Stockage du claim_token (UUID one-shot pour rattacher un profil anonyme)
+// SessionStorage : persiste tant que l'onglet est ouvert, disparait a la fermeture.
+// Volontairement different du tokenStore : ici l'utilisateur n'est PAS authentifie,
+// le claim_token n'est pas un secret de session, juste un identifiant temporaire
+// permettant de retrouver le profil genere en mode anonyme apres inscription.
+const CLAIM_KEY = 'ensoi_pending_claim';
+
+export const pendingClaimStore = {
+  /**
+   * Stocke un claim apres generation anonyme.
+   * @param {{ profilId: number, claimToken: string }} payload
+   */
+  set({ profilId, claimToken }) {
+    try {
+      sessionStorage.setItem(CLAIM_KEY, JSON.stringify({
+        profilId,
+        claimToken,
+        createdAt: Date.now(),
+      }));
+    } catch (e) {
+      // sessionStorage indisponible (mode prive, quota) : silencieux
+      console.warn('pendingClaimStore.set a echoue:', e);
+    }
+  },
+
+  /**
+   * Recupere le claim en attente ou null s'il n'y en a pas.
+   * @returns {{ profilId: number, claimToken: string, createdAt: number } | null}
+   */
+  get() {
+    try {
+      const raw = sessionStorage.getItem(CLAIM_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  },
+
+  /** Efface le claim en attente (apres usage ou abandon). */
+  clear() {
+    try {
+      sessionStorage.removeItem(CLAIM_KEY);
+    } catch (e) {
+      // silencieux
+    }
+  },
+
+  /** True s'il y a un claim en attente. */
+  has() {
+    return Boolean(this.get());
+  },
+};
+
+
 const client = axios.create({
   baseURL: API_URL,
   timeout: 15000,
@@ -88,6 +143,7 @@ export const profilsApi = {
   get: (id) => client.get(`/api/profils/${id}`),
   delete: (id) => client.delete(`/api/profils/${id}`),
   share: (id) => client.post(`/api/profils/${id}/share`),
+  claim: (id, claim_token) => client.post(`/api/profils/${id}/claim`, { claim_token }),
   public: (token) => client.get(`/public/${token}`),
   health: () => client.get('/api/health'),
   cognitif: () => client.get('/api/cognitif/questions'),
