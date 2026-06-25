@@ -3,6 +3,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import PrivateRoute from './components/PrivateRoute';
 import GenererPage from './pages/GenererPage';
 import ProfilPage from './pages/ProfilPage';
+import LoginPage from './pages/LoginPage';
 
 function Home() {
   return (
@@ -43,7 +44,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Placeholder title="Connexion" />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Placeholder title="Inscription" />} />
           <Route path="/generer" element={<GenererPage />} />
           <Route path="/profils/:id" element={<ProfilPage />} />
