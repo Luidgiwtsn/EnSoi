@@ -49,19 +49,29 @@ export default function ProfilPage() {
 
   if (error) {
     const status = error.response?.status;
+    let titre, detail;
+
+    if (status === 404) {
+      titre = 'Profil introuvable';
+      detail = "Ce profil n'existe pas ou a ete supprime.";
+    } else if (status === 403) {
+      titre = 'Acces refuse';
+      detail = "Ce profil ne vous appartient pas.";
+    } else if (!error.response) {
+      titre = 'Impossible de joindre le serveur';
+      detail = 'Verifiez votre connexion internet et reessayez.';
+    } else {
+      titre = 'Impossible de charger le profil';
+      detail = 'Veuillez reessayer plus tard.';
+    }
+
     return (
       <div className="container mx-auto p-6">
         <Link to="/" className="text-ensoi-primary hover:underline">
           Retour
         </Link>
-        <h1 className="text-2xl font-serif mt-4 mb-2">
-          {status === 404 ? 'Profil introuvable' : 'Impossible de charger le profil'}
-        </h1>
-        <p className="text-ensoi-muted">
-          {status === 404
-            ? "Ce profil n'existe pas ou a ete supprime."
-            : "Veuillez reessayer plus tard."}
-        </p>
+        <h1 className="text-2xl font-serif mt-4 mb-2">{titre}</h1>
+        <p className="text-ensoi-muted">{detail}</p>
       </div>
     );
   }

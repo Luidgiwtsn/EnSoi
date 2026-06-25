@@ -3,28 +3,59 @@ import { useNavigate } from 'react-router-dom';
 import { profilsApi } from '../api/client';
 import ProfilForm from '../components/ProfilForm';
 
-// Page d'orchestration du wizard de generation de profil.
-//
-// Flux :
-//   1. L'utilisateur remplit le wizard ProfilForm
-//   2. Au submit, on appelle POST /api/generate avec le payload complet
-//   3. Le backend renvoie le profil cree (avec son id)
-//   4. On redirige vers /profils/:id
-//
-// La gestion fine des erreurs (429, 422, 503) sera affinee au commit 8.
+function formaterErreur(err) {
+  if (err.code === 'ECONNABORTED') {
+    return {
+      titre: 'Le serveur met trop de temps a repondre',
+      detail: "Reessayez dans quelques instants. Si le probleme persiste, le serveur est peut-etre temporairement surcharge.",
+    };
+  }
+
+  if (!err.response) {
+    return {
+      titre: 'Impossible de joindre le serveur',
+      detail: 'Verifiez votre connexion internet et reessayez.',
+    };
+  }
+
+  const status = err.response.status;
+
+  if (status === 429) {
+    return {
+      titre: 'Trop de tentatives',
+      detail: "Pour eviter la surcharge, la generation est limitee a 3 par minute. Patientez un instant avant de reessayer.",
+    };
+  }
+
+  if (status === 422) {
+    return {
+      titre: 'Donnees invalides',
+      detail: "Verifiez vos informations (orthographe du nom, date, fuseau horaire) et reessayez.",
+    };
+  }
+
+  if (status >= 500) {
+    return {
+      titre: 'Erreur du serveur',
+      detail: "Une erreur est survenue cote serveur. Reessayez dans quelques instants.",
+    };
+  }
+
+  return {
+    titre: 'Une erreur est survenue',
+    detail: "Veuillez reessayer. Si le probleme persiste, contactez le support.",
+  };
+}
 
 export default function GenererPage() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
+  const [erreur, setErreur] = useState(null);
 
   async function handleSubmit(formData) {
     setSubmitting(true);
-    setError(null);
+    setErreur(null);
 
-    // Prepare le payload : on n'envoie au backend que les champs renseignes.
-    // Pydantic accepte l'absence des cles optionnelles, mais une chaine vide
-    // pour pays_naissance ferait echouer la validation pycountry.
     const payload = {
       prenom: formData.prenom,
       nom_famille: formData.nom_famille,
@@ -41,7 +72,7 @@ export default function GenererPage() {
       const { data } = await profilsApi.generate(payload);
       navigate(`/profils/${data.id}`);
     } catch (err) {
-      setError(err);
+      setErreur(formaterErreur(err));
       setSubmitting(false);
     }
   }
@@ -50,14 +81,10 @@ export default function GenererPage() {
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-serif mb-6">Generer un profil</h1>
 
-      {error && (
+      {erreur && (
         <div className="max-w-2xl mx-auto mb-4 p-4 border border-red-300 bg-red-50 rounded">
-          <p className="text-red-700 font-medium">
-            Une erreur est survenue lors de la generation.
-          </p>
-          <p className="text-sm text-red-600 mt-1">
-            Veuillez reessayer. Si le probleme persiste, contactez le support.
-          </p>
+          <p className="text-red-700 font-medium">{erreur.titre}</p>
+          <p className="text-sm text-red-600 mt-1">{erreur.detail}</p>
         </div>
       )}
 
