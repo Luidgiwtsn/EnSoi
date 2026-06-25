@@ -96,6 +96,11 @@ class HumanDesignResult(BaseModel):
     donnees_completes: bool
 
 
+class ClaimRequest(BaseModel):
+    """Body de POST /api/profils/{id}/claim : token UUID one-shot."""
+    claim_token: str = Field(min_length=36, max_length=36)
+    
+    
 class ProfilComplet(BaseModel):
     """Réponse complète retournée au frontend."""
     model_config = ConfigDict(from_attributes=True)
