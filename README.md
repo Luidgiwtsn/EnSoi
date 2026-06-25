@@ -151,23 +151,23 @@ Le `body` d'inscription attend : `{prenom, nom_famille, email, password, date_na
 ##  Tests
 
 184 tests pytest organisés par module :
-test_numerologie.py      — 16 tests (algorithme)
+test_numerologie.py      - 16 tests (algorithme)
 
-test_human_design.py     — 46 tests (moteur Swiss Ephemeris)
+test_human_design.py     - 46 tests (moteur Swiss Ephemeris)
 
-test_profil_cognitif.py  — 13 tests (questionnaire)
+test_profil_cognitif.py  - 13 tests (questionnaire)
 
-test_groq_service.py     — 14 tests (mocks + circuit breaker)
+test_groq_service.py     - 14 tests (mocks + circuit breaker)
 
-test_auth.py             — 23 tests (JWT, bcrypt, flux complet)
+test_auth.py             - 23 tests (JWT, bcrypt, flux complet)
 
-test_api_generate.py     — 19 tests (POST /api/generate + CRUD)
+test_api_generate.py     - 19 tests (POST /api/generate + CRUD)
 
-test_api_cognitif.py     —  6 tests (GET /api/cognitif/questions)
+test_api_cognitif.py     -  6 tests (GET /api/cognitif/questions)
 
-test_rate_limiting.py    —  5 tests (slowapi actif)
+test_rate_limiting.py    -  5 tests (slowapi actif)
 
-test_input_validation.py — 42 tests (patterns regex + max_length)
+test_input_validation.py - 42 tests (patterns regex + max_length)
 
 GitHub Actions exécute `pytest` sur chaque push (badge à venir).
 
