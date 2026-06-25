@@ -67,9 +67,15 @@ export default function ProfilPage() {
       <Link to="/" className="text-ensoi-primary hover:underline">
         Retour
       </Link>
-      <h1 className="text-3xl font-serif mt-4 mb-2">
-        Profil de {profil.prenom} {profil.nom_famille}
-      </h1>
+      <p className="text-ensoi-muted mb-6">
+        Genere le {new Date(profil.created_at).toLocaleString('fr-FR', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
+      </p>
       <p className="text-ensoi-muted mb-6">
         Genere le {new Date(profil.created_at).toLocaleDateString('fr-FR')}
       </p>
