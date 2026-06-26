@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { profilsApi } from '../api/client';
+import { profilsApi, pendingClaimStore } from '../api/client';
+import { useAuth } from '../hooks/useAuth';
 import ProfilForm from '../components/ProfilForm';
 
 function formaterErreur(err) {
@@ -10,37 +11,31 @@ function formaterErreur(err) {
       detail: "Reessayez dans quelques instants. Si le probleme persiste, le serveur est peut-etre temporairement surcharge.",
     };
   }
-
   if (!err.response) {
     return {
       titre: 'Impossible de joindre le serveur',
       detail: 'Verifiez votre connexion internet et reessayez.',
     };
   }
-
   const status = err.response.status;
-
   if (status === 429) {
     return {
       titre: 'Trop de tentatives',
       detail: "Pour eviter la surcharge, la generation est limitee a 3 par minute. Patientez un instant avant de reessayer.",
     };
   }
-
   if (status === 422) {
     return {
       titre: 'Donnees invalides',
       detail: "Verifiez vos informations (orthographe du nom, date, fuseau horaire) et reessayez.",
     };
   }
-
   if (status >= 500) {
     return {
       titre: 'Erreur du serveur',
       detail: "Une erreur est survenue cote serveur. Reessayez dans quelques instants.",
     };
   }
-
   return {
     titre: 'Une erreur est survenue',
     detail: "Veuillez reessayer. Si le probleme persiste, contactez le support.",
@@ -49,6 +44,7 @@ function formaterErreur(err) {
 
 export default function GenererPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [erreur, setErreur] = useState(null);
 
@@ -70,6 +66,18 @@ export default function GenererPage() {
 
     try {
       const { data } = await profilsApi.generate(payload);
+
+      // Scenario 3 : si l'utilisateur etait anonyme au moment de la generation,
+      // le backend a renvoye un claim_token UUID. On le stocke en sessionStorage
+      // pour qu'il puisse etre consomme automatiquement apres inscription/connexion.
+      // La banniere "Sauvegarder ce profil" sera affichee sur ProfilPage.
+      if (!isAuthenticated && data.claim_token) {
+        pendingClaimStore.set({
+          profilId: data.id,
+          claimToken: data.claim_token,
+        });
+      }
+
       navigate(`/profils/${data.id}`);
     } catch (err) {
       setErreur(formaterErreur(err));

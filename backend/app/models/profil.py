@@ -30,4 +30,5 @@ class Profil(SQLModel, table=True):
 
     synthese_ia: Optional[str] = Field(default=None)  # None si Groq indisponible
     statut: str = Field(default="pending", max_length=20)  # pending|complet|partiel
+    claim_token: Optional[str] = Field(default=None, max_length=36, nullable=True, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)

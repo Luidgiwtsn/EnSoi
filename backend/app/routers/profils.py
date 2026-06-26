@@ -1,5 +1,6 @@
 # app/routers/profils.py
 import secrets
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -11,7 +12,7 @@ from app.models.profil import Profil
 from app.models.share_token import ShareToken
 from app.models.user import User
 from app.routers.auth import get_current_user, get_current_user_optional
-from app.schemas.profil import ProfilRequest, ProfilComplet
+from app.schemas.profil import ProfilRequest, ProfilComplet, ClaimRequest
 from app.services.numerologie import calculer as calculer_numerologie
 from app.services.human_design import calculer as calculer_human_design
 from app.services.profil_cognitif import (
@@ -80,6 +81,11 @@ async def generate_profil(
     # 2. Insertion en BDD avec statut pending
     # db.refresh après le premier commit garantit que profil.id est renseigné
     # avant l'appel Groq, même si SQLModel invalide l'objet en mémoire.
+    # claim_token : UUID one-shot genere uniquement pour les profils anonymes.
+    # Permet a un utilisateur de rattacher ce profil a son compte apres inscription.
+    # Pour un utilisateur deja connecte, le profil est immediatement rattache (user_id set)
+    claim_token = str(uuid.uuid4()) if current_user is None else None
+
     profil = Profil(
         user_id=current_user.id if current_user else None,
         prenom=payload.prenom,
@@ -93,6 +99,7 @@ async def generate_profil(
         human_design=human_design,
         synthese_ia=None,
         statut="pending",
+        claim_token=claim_token,
     )
     db.add(profil)
     db.commit()
@@ -197,6 +204,65 @@ def delete_profil(
     db.delete(profil)
     db.commit()
     return {"message": "Profil supprimé"}
+
+
+# POST /api/profils/{id}/claim - rattacher un profil anonyme a un compte
+
+
+@router.post(
+    "/profils/{profil_id}/claim",
+    response_model=ProfilComplet,
+    status_code=status.HTTP_200_OK,
+)
+def claim_profil(
+    profil_id: int,
+    body: ClaimRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Rattache un profil anonyme au compte de l'utilisateur connecte.
+
+    Cas d'usage : un visiteur non connecte genere un profil (user_id=NULL,
+    claim_token=UUID), puis decide de creer un compte pour le sauvegarder.
+    Apres inscription/connexion, le frontend appelle cet endpoint avec le
+    claim_token recupere a la generation.
+
+    Le token est one-shot : il est efface apres usage pour empecher tout
+    rattachement ulterieur du meme profil par un autre utilisateur.
+
+    Codes d'erreur :
+    - 404 : profil introuvable
+    - 409 : profil deja rattache (user_id != NULL)
+    - 403 : claim_token invalide
+    """
+    profil = db.get(Profil, profil_id)
+    if not profil:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profil introuvable",
+        )
+
+    if profil.user_id is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Ce profil est deja rattache a un compte",
+        )
+
+    if profil.claim_token is None or profil.claim_token != body.claim_token:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Token de rattachement invalide",
+        )
+
+    # Rattachement + invalidation du token (one-shot)
+    profil.user_id = current_user.id
+    profil.claim_token = None
+    db.add(profil)
+    db.commit()
+    db.refresh(profil)
+
+    return profil
 
 
 
