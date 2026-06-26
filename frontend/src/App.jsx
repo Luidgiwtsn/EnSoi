@@ -4,6 +4,7 @@ import PrivateRoute from './components/PrivateRoute';
 import GenererPage from './pages/GenererPage';
 import ProfilPage from './pages/ProfilPage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function Home() {
   return (
@@ -45,7 +46,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<Placeholder title="Inscription" />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/generer" element={<GenererPage />} />
           <Route path="/profils/:id" element={<ProfilPage />} />
           <Route
