@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import PrivateRoute from './components/PrivateRoute';
+import Navbar from './components/Navbar';
 import GenererPage from './pages/GenererPage';
 import ProfilPage from './pages/ProfilPage';
 import LoginPage from './pages/LoginPage';
@@ -14,8 +15,7 @@ function Home() {
         Découvrez votre profil personnel à travers trois systèmes complémentaires.
       </p>
       <div className="flex gap-3">
-        <Link to="/login" className="btn-secondary">Se connecter</Link>
-        <Link to="/register" className="btn-primary">Créer un profil</Link>
+        <Link to="/generer" className="btn-primary">Générer un profil</Link>
       </div>
     </div>
   );
@@ -43,6 +43,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
