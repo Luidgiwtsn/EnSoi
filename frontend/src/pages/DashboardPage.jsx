@@ -3,6 +3,8 @@ import { useProfils } from '../hooks/useProfils';
 import ProfilCard from '../components/ProfilCard';
 import EmptyDashboard from '../components/EmptyDashboard';
 import ConfirmDialog from '../components/ConfirmDialog';
+import ShareDialog from '../components/ShareDialog';
+import { profilsApi } from '../api/client';
 
 /**
  * Page Dashboard : liste des profils de l'utilisateur connecte.
@@ -24,6 +26,9 @@ function DashboardPage() {
   // Etat de la modale de confirmation de suppression
   const [profilToDelete, setProfilToDelete] = useState(null);
   const [deleteError, setDeleteError] = useState(null);
+  // Etat de la modale de partage
+  const [shareData, setShareData] = useState(null);
+  const [shareError, setShareError] = useState(null);
 
   const handleAskDelete = (id) => {
     setDeleteError(null);
@@ -43,9 +48,18 @@ function DashboardPage() {
     }
   };
 
-  const handleShare = (id) => {
-    // TODO : implementation sur feature/share-public
-    alert(`Partage du profil ${id} : bientot disponible.`);
+  const handleShare = async (id) => {
+    setShareError(null);
+    try {
+      const response = await profilsApi.share(id);
+      setShareData(response.data);
+    } catch (err) {
+      console.error('handleShare:', err);
+      setShareError(
+        err.response?.data?.detail ||
+        'Impossible de creer le lien de partage. Reessayez plus tard.'
+      );
+    }
   };
 
   const handleExport = (id) => {
@@ -118,6 +132,13 @@ function DashboardPage() {
         </div>
       )}
 
+      {/* Banniere d'erreur de partage */}
+      {shareError && (
+        <div className="mb-4 bg-amber-50 border border-amber-200 rounded p-3 text-sm text-amber-800">
+          {shareError}
+        </div>
+      )}
+
       {/* Grille des cartes profils */}
       <div className="grid gap-4 md:grid-cols-2">
         {profils.map((profil) => (
@@ -141,6 +162,14 @@ function DashboardPage() {
         destructive={true}
         onConfirm={handleConfirmDelete}
         onCancel={() => setProfilToDelete(null)}
+      />
+      
+      {/* Modale de partage */}
+      <ShareDialog
+        isOpen={shareData !== null}
+        url={shareData?.url}
+        expiresAt={shareData?.expires_at}
+        onClose={() => setShareData(null)}
       />
     </div>
   );
