@@ -32,7 +32,7 @@ function ProfilCard({ profil, onDelete, onShare, onExport }) {
     year: 'numeric',
   });
 
-  const handleVoir = () => navigate(`/profil/${profil.id}`);
+  const handleVoir = () => navigate(`/profils/${profil.id}`);
 
   return (
     <article className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">

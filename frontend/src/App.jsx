@@ -6,6 +6,7 @@ import GenererPage from './pages/GenererPage';
 import ProfilPage from './pages/ProfilPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
 
 function Home() {
   return (
@@ -54,7 +55,7 @@ export default function App() {
             path="/dashboard"
             element={
               <PrivateRoute>
-                <Placeholder title="Mon historique" />
+                <DashboardPage />
               </PrivateRoute>
             }
           />
