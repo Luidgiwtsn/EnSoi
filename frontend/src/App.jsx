@@ -7,6 +7,7 @@ import ProfilPage from './pages/ProfilPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
+import PublicProfilPage from './pages/PublicProfilPage';
 
 function Home() {
   return (
@@ -59,7 +60,7 @@ export default function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/public/:token" element={<Placeholder title="Profil partagé" />} />
+          <Route path="/public/:token" element={<PublicProfilPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
