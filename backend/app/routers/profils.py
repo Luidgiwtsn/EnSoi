@@ -331,7 +331,11 @@ def share_profil(
 # GET /public/{token} - accès public sans authentification
 
 
-@public_router.get("/public/{token}", response_model=ProfilComplet)
+@public_router.get(
+    "/public/{token}",
+    response_model=ProfilComplet,
+    response_model_exclude={"synthese_ia"},
+)
 def get_profil_public(
     token: str,
     db: Session = Depends(get_db),
