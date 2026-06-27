@@ -319,7 +319,7 @@ def share_profil(
         db.commit()
         db.refresh(share_token)
 
-    base_url = settings.FRONTEND_URL
+    base_url = settings.frontend_canonical_url
     return {
         "url": f"{base_url}/public/{token_str}",
         "token": token_str,
