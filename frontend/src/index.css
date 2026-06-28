@@ -15,12 +15,12 @@
 @layer components {
   .btn-primary {
     @apply bg-ensoi-primary text-white px-6 py-3 rounded-lg font-medium
-           hover:bg-indigo-700 transition-colors duration-200
+           hover:bg-ensoi-dark transition-colors duration-200
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-secondary {
     @apply bg-white text-ensoi-primary border border-ensoi-primary px-6 py-3
-           rounded-lg font-medium hover:bg-indigo-50 transition-colors duration-200;
+           rounded-lg font-medium hover:bg-ensoi-light transition-colors duration-200;
   }
   .input-field {
     @apply w-full px-4 py-3 border border-gray-300 rounded-lg
