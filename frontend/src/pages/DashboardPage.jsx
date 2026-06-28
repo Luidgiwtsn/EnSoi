@@ -5,6 +5,7 @@ import EmptyDashboard from '../components/EmptyDashboard';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ShareDialog from '../components/ShareDialog';
 import { profilsApi } from '../api/client';
+import { generateProfilPDF } from '../services/pdfExport';
 
 /**
  * Page Dashboard : liste des profils de l'utilisateur connecte.
@@ -18,7 +19,8 @@ import { profilsApi } from '../api/client';
  * Actions :
  * - Suppression : ouvre ConfirmDialog, puis appelle removeProfil du hook
  *   (suppression optimiste, restauration en cas d'echec)
- * - Partage / Export PDF : placeholders, implementation sur les branches dediees
+ * - Partage : ouvre ShareDialog avec le lien public et la date d'expiration
+ * - Export PDF : declenche la generation cote client via generateProfilPDF
  */
 function DashboardPage() {
   const { profils, loading, error, refetch, removeProfil } = useProfils();
@@ -29,6 +31,7 @@ function DashboardPage() {
   // Etat de la modale de partage
   const [shareData, setShareData] = useState(null);
   const [shareError, setShareError] = useState(null);
+  const [exportError, setExportError] = useState(null);
 
   const handleAskDelete = (id) => {
     setDeleteError(null);
@@ -62,9 +65,16 @@ function DashboardPage() {
     }
   };
 
-  const handleExport = (id) => {
-    // TODO : implementation sur feature/export-pdf
-    alert(`Export PDF du profil ${id} : bientot disponible.`);
+  const handleExport = (profil) => {
+    setExportError(null);
+    try {
+      generateProfilPDF(profil);
+    } catch (err) {
+      console.error('handleExport:', err);
+      setExportError(
+        "L'export PDF a echoue. Reessayez ou contactez le support si le probleme persiste."
+      );
+    }
   };
 
   // Etat de chargement initial
@@ -136,6 +146,13 @@ function DashboardPage() {
       {shareError && (
         <div className="mb-4 bg-amber-50 border border-amber-200 rounded p-3 text-sm text-amber-800">
           {shareError}
+        </div>
+      )}
+
+      {/* Banniere d'erreur d'export PDF */}
+      {exportError && (
+        <div className="mb-4 bg-amber-50 border border-amber-200 rounded p-3 text-sm text-amber-800">
+          {exportError}
         </div>
       )}
 
