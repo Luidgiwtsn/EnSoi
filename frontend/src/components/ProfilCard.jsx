@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
  * - profil : objet ProfilComplet retourne par le backend
  * - onDelete : (id) => void, callback quand l'utilisateur confirme la suppression
  * - onShare : (id) => void, placeholder (implementation sur feature/share-public)
- * - onExport : (id) => void, placeholder (implementation sur feature/export-pdf)
+ * - onExport : (profil) => void, callback qui declenche la generation PDF
  */
 function ProfilCard({ profil, onDelete, onShare, onExport }) {
   const navigate = useNavigate();
@@ -97,7 +97,7 @@ function ProfilCard({ profil, onDelete, onShare, onExport }) {
           Partager
         </button>
         <button
-          onClick={() => onExport(profil.id)}
+          onClick={() => onExport(profil)}
           className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
         >
           Exporter PDF
