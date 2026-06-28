@@ -6,10 +6,10 @@ import { jsPDF } from 'jspdf';
  * Format A4 portrait, charte EnSoi (vert sauge + dore + creme).
  * Sections :
  *   1. En-tete : titre + nom complet + date de naissance + date de generation
- *   2. Numerologie : chemin de vie, expression, intime, realisation
+ *   2. Numérologie : chemin de vie, expression, intime, réalisation
  *   3. Profil Cognitif : type + 4 dimensions avec pourcentages
  *   4. Human Design : type, strategie, profil, autorite
- *   5. Synthese IA : texte multi-lignes (ou message "non disponible" si statut=partiel)
+ *   5. Synthèse IA : texte multi-lignes (ou message "non disponible" si statut=partiel)
  *
  * Le claim_token n'est jamais inclus (securite).
  * L'heure, le pays et le fuseau de naissance ne sont pas inclus (decision MVP).
@@ -86,40 +86,40 @@ export function generateProfilPDF(profil) {
   });
   doc.setFontSize(10);
   doc.setTextColor(COLORS.muted);
-  doc.text(`Ne(e) le ${dateNaissance}  -  Profil genere le ${dateGeneration}`, MARGIN, y);
+  doc.text(`Né(e) le ${dateNaissance}  -  Profil généré le ${dateGeneration}`, MARGIN, y);
   y += 10;
 
   drawSeparator();
 
   // === 2. NUMEROLOGIE ===
-  sectionTitle('Numerologie');
+  sectionTitle('Numérologie');
   labelValue('Chemin de vie', profil.numerologie.chemin_vie);
   labelValue('Expression', profil.numerologie.expression);
   labelValue('Intime', profil.numerologie.intime);
-  labelValue('Realisation', profil.numerologie.realisation);
+  labelValue('Réalisation', profil.numerologie.realisation);
   y += 4;
 
   // === 3. PROFIL COGNITIF ===
   sectionTitle('Profil Cognitif');
   labelValue('Type', `${profil.profil_cognitif.type_cognitif} - ${profil.profil_cognitif.nom_profil}`);
   const dims = profil.profil_cognitif.dimensions;
-  labelValue('Energie', `${dims.energie.dominant} (${dims.energie.score_pourcentage}%)`);
+  labelValue('Énergie', `${dims.energie.dominant} (${dims.energie.score_pourcentage}%)`);
   labelValue('Perception', `${dims.perception.dominant} (${dims.perception.score_pourcentage}%)`);
-  labelValue('Decision', `${dims.decision.dominant} (${dims.decision.score_pourcentage}%)`);
+  labelValue('Décision', `${dims.decision.dominant} (${dims.decision.score_pourcentage}%)`);
   labelValue('Organisation', `${dims.organisation.dominant} (${dims.organisation.score_pourcentage}%)`);
   y += 4;
 
   // === 4. HUMAN DESIGN ===
   sectionTitle('Human Design');
   labelValue('Type', profil.human_design.type_hd);
-  labelValue('Strategie', profil.human_design.strategie);
+  labelValue('Stratégie', profil.human_design.strategie);
   labelValue('Profil', profil.human_design.profil);
-  labelValue('Autorite', profil.human_design.autorite);
+  labelValue('Autorité', profil.human_design.autorite);
   if (!profil.human_design.donnees_completes) {
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(9);
     doc.setTextColor(COLORS.muted);
-    doc.text('(Heure de naissance non fournie - calcul partiel)', MARGIN, y);
+    doc.text('(Heure de naissance non fournie — calcul partiel)', MARGIN, y);
     y += 5;
   }
   y += 4;
@@ -127,7 +127,7 @@ export function generateProfilPDF(profil) {
   drawSeparator();
 
   // === 5. SYNTHESE IA ===
-  sectionTitle('Synthese personnelle');
+  sectionTitle('Synthèse personnelle');
   if (profil.synthese_ia && profil.statut === 'complet') {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
@@ -147,7 +147,7 @@ export function generateProfilPDF(profil) {
     doc.setFontSize(10);
     doc.setTextColor(COLORS.muted);
     doc.text(
-      'Synthese non disponible (le service IA etait indisponible lors de la generation).',
+      'Synthèse non disponible (le service IA était indisponible lors de la génération).',
       MARGIN,
       y
     );
