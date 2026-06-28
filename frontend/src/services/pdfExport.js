@@ -1,0 +1,167 @@
+import { jsPDF } from 'jspdf';
+
+/**
+ * Genere un PDF d'un profil EnSoi et declenche son telechargement.
+ *
+ * Format A4 portrait, charte EnSoi (vert sauge + dore + creme).
+ * Sections :
+ *   1. En-tete : titre + nom complet + date de naissance + date de generation
+ *   2. Numerologie : chemin de vie, expression, intime, realisation
+ *   3. Profil Cognitif : type + 4 dimensions avec pourcentages
+ *   4. Human Design : type, strategie, profil, autorite
+ *   5. Synthese IA : texte multi-lignes (ou message "non disponible" si statut=partiel)
+ *
+ * Le claim_token n'est jamais inclus (securite).
+ * L'heure, le pays et le fuseau de naissance ne sont pas inclus (decision MVP).
+ *
+ * @param {object} profil - Objet ProfilComplet retourne par le backend
+ */
+export function generateProfilPDF(profil) {
+  // Couleurs EnSoi (HEX) - cohérent avec tailwind.config.js
+  const COLORS = {
+    dark: '#3D4A3D',      // vert sauge fonce - titres
+    primary: '#95A390',   // vert sauge - titres de section
+    secondary: '#B0A37F', // dore sable - separateurs et accents
+    muted: '#7A8478',     // vert-gris - texte secondaire
+    body: '#1F2937',      // gris fonce - corps du texte
+  };
+
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  const PAGE_WIDTH = 210;
+  const MARGIN = 20;
+  const CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
+  let y = MARGIN;
+
+  // Helper : ajoute une ligne de separation doree
+  const drawSeparator = () => {
+    doc.setDrawColor(COLORS.secondary);
+    doc.setLineWidth(0.5);
+    doc.line(MARGIN, y, PAGE_WIDTH - MARGIN, y);
+    y += 6;
+  };
+
+  // Helper : titre de section
+  const sectionTitle = (text) => {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(COLORS.primary);
+    doc.text(text, MARGIN, y);
+    y += 7;
+  };
+
+  // Helper : ligne label + valeur
+  const labelValue = (label, value) => {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(COLORS.muted);
+    doc.text(`${label} :`, MARGIN, y);
+    doc.setTextColor(COLORS.body);
+    doc.text(String(value), MARGIN + 50, y);
+    y += 6;
+  };
+
+  // === 1. EN-TETE ===
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(22);
+  doc.setTextColor(COLORS.dark);
+  doc.text('Profil EnSoi', MARGIN, y);
+  y += 10;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(13);
+  doc.setTextColor(COLORS.body);
+  doc.text(`${profil.prenom} ${profil.nom_famille}`, MARGIN, y);
+  y += 6;
+
+  const dateNaissance = new Date(profil.date_naissance).toLocaleDateString('fr-FR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+  const dateGeneration = new Date(profil.created_at).toLocaleDateString('fr-FR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+  doc.setFontSize(10);
+  doc.setTextColor(COLORS.muted);
+  doc.text(`Ne(e) le ${dateNaissance}  -  Profil genere le ${dateGeneration}`, MARGIN, y);
+  y += 10;
+
+  drawSeparator();
+
+  // === 2. NUMEROLOGIE ===
+  sectionTitle('Numerologie');
+  labelValue('Chemin de vie', profil.numerologie.chemin_vie);
+  labelValue('Expression', profil.numerologie.expression);
+  labelValue('Intime', profil.numerologie.intime);
+  labelValue('Realisation', profil.numerologie.realisation);
+  y += 4;
+
+  // === 3. PROFIL COGNITIF ===
+  sectionTitle('Profil Cognitif');
+  labelValue('Type', `${profil.profil_cognitif.type_cognitif} - ${profil.profil_cognitif.nom_profil}`);
+  const dims = profil.profil_cognitif.dimensions;
+  labelValue('Energie', `${dims.energie.dominant} (${dims.energie.score_pourcentage}%)`);
+  labelValue('Perception', `${dims.perception.dominant} (${dims.perception.score_pourcentage}%)`);
+  labelValue('Decision', `${dims.decision.dominant} (${dims.decision.score_pourcentage}%)`);
+  labelValue('Organisation', `${dims.organisation.dominant} (${dims.organisation.score_pourcentage}%)`);
+  y += 4;
+
+  // === 4. HUMAN DESIGN ===
+  sectionTitle('Human Design');
+  labelValue('Type', profil.human_design.type_hd);
+  labelValue('Strategie', profil.human_design.strategie);
+  labelValue('Profil', profil.human_design.profil);
+  labelValue('Autorite', profil.human_design.autorite);
+  if (!profil.human_design.donnees_completes) {
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(9);
+    doc.setTextColor(COLORS.muted);
+    doc.text('(Heure de naissance non fournie - calcul partiel)', MARGIN, y);
+    y += 5;
+  }
+  y += 4;
+
+  drawSeparator();
+
+  // === 5. SYNTHESE IA ===
+  sectionTitle('Synthese personnelle');
+  if (profil.synthese_ia && profil.statut === 'complet') {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(COLORS.body);
+    const lignes = doc.splitTextToSize(profil.synthese_ia, CONTENT_WIDTH);
+    // Gestion du saut de page si la synthese deborde
+    lignes.forEach((ligne) => {
+      if (y > 280) {
+        doc.addPage();
+        y = MARGIN;
+      }
+      doc.text(ligne, MARGIN, y);
+      y += 5;
+    });
+  } else {
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(10);
+    doc.setTextColor(COLORS.muted);
+    doc.text(
+      'Synthese non disponible (le service IA etait indisponible lors de la generation).',
+      MARGIN,
+      y
+    );
+    y += 5;
+  }
+
+  // === TELECHARGEMENT ===
+  const dateFichier = new Date(profil.created_at)
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, '');
+  const nomFichier = `ensoi-profil-${profil.prenom}-${profil.nom_famille}-${dateFichier}.pdf`
+    .toLowerCase()
+    .replace(/\s+/g, '-');
+
+  doc.save(nomFichier);
+}
