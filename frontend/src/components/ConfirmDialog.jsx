@@ -37,7 +37,7 @@ function ConfirmDialog({
 
   const confirmButtonClass = destructive
     ? 'bg-red-600 hover:bg-red-700 text-white'
-    : 'bg-indigo-600 hover:bg-indigo-700 text-white';
+    : 'bg-ensoi-primary hover:bg-ensoi-dark text-white';
 
   return (
     <div

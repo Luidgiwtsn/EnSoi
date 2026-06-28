@@ -93,8 +93,8 @@ export default function PublicProfilPage() {
       </Link>
 
       {/* Bandeau d'information : profil partage */}
-      <div className="mt-4 mb-6 bg-indigo-50 border border-indigo-200 rounded p-4">
-        <p className="text-sm text-indigo-900">
+      <div className="mt-4 mb-6 bg-ensoi-light border border-ensoi-secondary rounded p-4">
+        <p className="text-sm text-ensoi-dark">
           <strong>Profil partage par {profil.prenom} {profil.nom_famille}.</strong>
           {' '}Vous consultez une version publique : la synthese personnelle
           n'est pas incluse.

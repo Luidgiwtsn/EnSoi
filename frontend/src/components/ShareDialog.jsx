@@ -83,14 +83,14 @@ function ShareDialog({ isOpen, url, expiresAt, onClose }) {
             value={url}
             readOnly
             onClick={(e) => e.target.select()}
-            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-ensoi-primary"
           />
           <button
             onClick={handleCopy}
             className={`px-4 py-2 text-sm font-medium rounded transition-colors ${
               copied
                 ? 'bg-green-600 text-white'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                : 'bg-ensoi-primary text-white hover:bg-ensoi-dark'
             }`}
           >
             {copied ? 'Copie ✓' : 'Copier'}

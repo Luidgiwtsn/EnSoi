@@ -8,12 +8,12 @@ export default {
     extend: {
       colors: {
         ensoi: {
-          primary: '#6366f1',
-          secondary: '#a78bfa',
-          accent: '#f59e0b',
-          dark: '#1e1b4b',
-          light: '#f8fafc',
-          muted: '#64748b',
+          primary: '#95A390',
+          secondary: '#B0A37F',
+          accent: '#A56A4A',
+          dark: '#3D4A3D',
+          light: '#F7F9F6',
+          muted: '#7A8478',
         },
       },
       fontFamily: {
