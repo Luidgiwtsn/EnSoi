@@ -22,7 +22,7 @@ function EmptyDashboard() {
 
       <button
         onClick={() => navigate('/generer')}
-        className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg"
+        className="px-6 py-3 bg-ensoi-primary text-white font-medium rounded-lg hover:bg-ensoi-dark transition-colors shadow-md hover:shadow-lg"
       >
         Generer mon premier profil
       </button>

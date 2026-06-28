@@ -86,7 +86,7 @@ function ProfilCard({ profil, onDelete, onShare, onExport }) {
       <footer className="flex flex-wrap gap-2 pt-3 border-t border-gray-100">
         <button
           onClick={handleVoir}
-          className="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors"
+          className="px-3 py-1.5 text-sm bg-ensoi-primary text-white rounded hover:bg-ensoi-dark transition-colors"
         >
           Voir
         </button>
