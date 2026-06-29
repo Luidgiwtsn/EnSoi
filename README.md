@@ -119,6 +119,10 @@ L'application est déployée sur deux services :
 | `GROQ_MODEL` | `llama-3.3-70b-versatile` |
 | `FRONTEND_URLS` | URL Vercel (ex: `https://ensoi.vercel.app`) |
 | `ENVIRONMENT` | `production` |
+| `RAILPACK_DEPLOY_APT_PACKAGES` | `libsqlite3-0` (requis par pyswisseph pour les calculs Human Design) |
+
+> **Note** : `RAILPACK_DEPLOY_APT_PACKAGES` est une variable de **build Railway** (pas d'application). Elle n'a pas d'équivalent local et n'apparaît donc pas dans `backend/.env.example`. Elle indique à Railpack d'installer le paquet apt `libsqlite3-0`, nécessaire au runtime de `pyswisseph` (Swiss Ephemeris).
+
 
 5. Au démarrage, le `Procfile` exécute `alembic upgrade head` puis lance Uvicorn — les migrations sont donc appliquées automatiquement à chaque déploiement.
 6. Vérifier la santé après déploiement : `curl https://<URL-RAILWAY>/api/health`.
