@@ -101,7 +101,7 @@ export function generateProfilPDF(profil) {
 
   // === 3. PROFIL COGNITIF ===
   sectionTitle('Profil Cognitif');
-  labelValue('Type', `${profil.profil_cognitif.type_cognitif} - ${profil.profil_cognitif.nom_profil}`);
+  labelValue('Type', profil.profil_cognitif.nom_profil);
   const dims = profil.profil_cognitif.dimensions;
   labelValue('Énergie', `${dims.energie.dominant} (${dims.energie.score_pourcentage}%)`);
   labelValue('Perception', `${dims.perception.dominant} (${dims.perception.score_pourcentage}%)`);
