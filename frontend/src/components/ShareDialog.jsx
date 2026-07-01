@@ -67,7 +67,7 @@ function ShareDialog({ isOpen, url, expiresAt, onClose }) {
           id="share-dialog-title"
           className="text-lg font-semibold text-gray-900 mb-2"
         >
-          Lien de partage cree
+          Lien de partage créé
         </h2>
 
         <p className="text-sm text-gray-600 mb-4">

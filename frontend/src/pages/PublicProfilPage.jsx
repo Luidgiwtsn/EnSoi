@@ -105,7 +105,7 @@ export default function PublicProfilPage() {
         Profil de {profil.prenom} {profil.nom_famille}
       </h1>
       <p className="text-ensoi-muted mb-8">
-        Genere le {new Date(profil.created_at).toLocaleDateString('fr-FR', {
+        Généré le {new Date(profil.created_at).toLocaleDateString('fr-FR', {
           day: 'numeric',
           month: 'long',
           year: 'numeric',

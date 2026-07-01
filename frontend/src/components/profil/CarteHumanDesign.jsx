@@ -6,9 +6,9 @@
 export default function CarteHumanDesign({ humanDesign }) {
   const lignes = [
     { label: 'Type', valeur: humanDesign.type_hd },
-    { label: 'Strategie', valeur: humanDesign.strategie },
+    { label: 'Stratégie', valeur: humanDesign.strategie },
     { label: 'Profil', valeur: humanDesign.profil },
-    { label: 'Autorite', valeur: humanDesign.autorite },
+    { label: 'Autorité', valeur: humanDesign.autorite },
   ];
 
   return (

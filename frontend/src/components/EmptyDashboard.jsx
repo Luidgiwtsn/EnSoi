@@ -16,7 +16,7 @@ function EmptyDashboard() {
       </h2>
 
       <p className="text-gray-600 max-w-md mb-8">
-        Generez votre premier profil pour decouvrir votre numerologie, votre
+        Générez votre premier profil pour découvrir votre numérologie, votre
         Human Design et votre type cognitif.
       </p>
 
@@ -24,7 +24,7 @@ function EmptyDashboard() {
         onClick={() => navigate('/generer')}
         className="px-6 py-3 bg-ensoi-primary text-white font-medium rounded-lg hover:bg-ensoi-dark transition-colors shadow-md hover:shadow-lg"
       >
-        Generer mon premier profil
+        Générer mon premier profil
       </button>
     </div>
   );

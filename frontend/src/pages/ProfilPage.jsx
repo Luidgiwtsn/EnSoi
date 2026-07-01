@@ -58,7 +58,7 @@ export default function ProfilPage() {
     let titre, detail;
     if (status === 404) {
       titre = 'Profil introuvable';
-      detail = "Ce profil n'existe pas ou a ete supprime.";
+      detail = "Ce profil n'existe pas ou a été supprimé.";
     } else if (status === 403) {
       titre = 'Acces refuse';
       detail = "Ce profil ne vous appartient pas.";
@@ -89,7 +89,7 @@ export default function ProfilPage() {
         Profil de {profil.prenom} {profil.nom_famille}
       </h1>
       <p className="text-ensoi-muted mb-8">
-        Genere le {new Date(profil.created_at).toLocaleString('fr-FR', {
+        Généré le {new Date(profil.created_at).toLocaleString('fr-FR', {
           day: 'numeric',
           month: 'long',
           year: 'numeric',

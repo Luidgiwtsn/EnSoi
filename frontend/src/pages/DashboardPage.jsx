@@ -46,7 +46,7 @@ function DashboardPage() {
     } catch (err) {
       setDeleteError(
         err.response?.data?.detail ||
-        'La suppression a echoue. Le profil a ete restaure.'
+        'La suppression a échoué. Le profil a été restauré.'
       );
     }
   };
@@ -60,7 +60,7 @@ function DashboardPage() {
       console.error('handleShare:', err);
       setShareError(
         err.response?.data?.detail ||
-        'Impossible de creer le lien de partage. Reessayez plus tard.'
+        'Impossible de créer le lien de partage. Réessayez plus tard.'
       );
     }
   };
@@ -72,7 +72,7 @@ function DashboardPage() {
     } catch (err) {
       console.error('handleExport:', err);
       setExportError(
-        "L'export PDF a echoue. Reessayez ou contactez le support si le probleme persiste."
+        "L'export PDF a échoué. Réessayez ou contactez le support si le problème persiste."
       );
     }
   };
@@ -173,7 +173,7 @@ function DashboardPage() {
       <ConfirmDialog
         isOpen={profilToDelete !== null}
         title="Supprimer ce profil ?"
-        message="Cette action est irreversible. Toutes les donnees du profil seront supprimees definitivement."
+        message="Cette action est irréversible. Toutes les données du profil seront supprimées définitivement."
         confirmLabel="Supprimer"
         cancelLabel="Annuler"
         destructive={true}
