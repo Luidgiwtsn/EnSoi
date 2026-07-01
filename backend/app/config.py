@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     groq_model: str = "llama-3.3-70b-versatile"
     groq_timeout: int = 8
     frontend_urls: str | list[str] = "http://localhost:5173"
+    frontend_public_url: str = "http://localhost:5173"
     environment: str = "development"
 
     class Config:
@@ -38,7 +39,7 @@ class Settings(BaseSettings):
     @property
     def frontend_canonical_url(self) -> str:
         """URL principale du frontend, utilisee pour construire les liens publics."""
-        return self.frontend_urls[0]
+        return self.frontend_public_url
 
     def is_production(self) -> bool:
         return self.environment == "production"
