@@ -98,7 +98,57 @@ pytest --cov=app --cov-report=html  # avec couverture
 
 ---
 
-## 📡 Endpoints API
+##  Déploiement
+
+L'application est déployée sur deux services :
+- **Backend + PostgreSQL** : Railway
+- **Frontend** : Vercel
+
+### Backend sur Railway
+
+1. Créer un projet Railway, lier le repo GitHub `EnSoi`.
+2. Dans les settings du service backend, définir **Root Directory** = `backend`.
+3. Ajouter un service PostgreSQL au projet (Railway l'injecte automatiquement via `${{Postgres.DATABASE_URL}}`).
+4. Configurer les variables d'environnement (voir `backend/.env.example` pour la liste complète) :
+
+| Variable | Valeur prod |
+|----------|-------------|
+| `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` (injecté par Railway) |
+| `SECRET_KEY` | Générer avec `python -c "import secrets; print(secrets.token_hex(32))"` — clé différente du dev |
+| `GROQ_API_KEY` | Clé Groq de production |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` |
+| `FRONTEND_URLS` | URL Vercel (ex: `https://ensoi.vercel.app`) |
+| `ENVIRONMENT` | `production` |
+| `RAILPACK_DEPLOY_APT_PACKAGES` | `libsqlite3-0` (requis par pyswisseph pour les calculs Human Design) |
+
+> **Note** : `RAILPACK_DEPLOY_APT_PACKAGES` est une variable de **build Railway** (pas d'application). Elle n'a pas d'équivalent local et n'apparaît donc pas dans `backend/.env.example`. Elle indique à Railpack d'installer le paquet apt `libsqlite3-0`, nécessaire au runtime de `pyswisseph` (Swiss Ephemeris).
+
+
+5. Au démarrage, le `Procfile` exécute `alembic upgrade head` puis lance Uvicorn — les migrations sont donc appliquées automatiquement à chaque déploiement.
+6. Vérifier la santé après déploiement : `curl https://<URL-RAILWAY>/api/health`.
+
+### Frontend sur Vercel
+
+1. Créer un projet Vercel, lier le repo GitHub `EnSoi`.
+2. Dans les settings, définir **Root Directory** = `frontend`.
+3. Vercel détecte automatiquement Vite (`npm install` + `npm run build`, output `dist/`).
+4. Configurer la variable d'environnement :
+
+| Variable | Valeur prod |
+|----------|-------------|
+| `VITE_API_URL` | URL Railway du backend (ex: `https://ensoi-backend.up.railway.app`) |
+
+5. Le `vercel.json` à la racine du frontend gère :
+   - Le routing SPA (toutes les routes servent `index.html`, React Router prend le relais)
+   - Les headers de sécurité (HSTS, X-Frame-Options, Referrer-Policy, etc.)
+
+### Workflow
+
+Chaque `git push` sur `main` déclenche un redéploiement automatique des deux services. Pour un déploiement de test, créer une branche `staging` et configurer un environnement de preview côté Railway/Vercel.
+
+---
+
+##  Endpoints API
 
 ### Auth (publics)
 
