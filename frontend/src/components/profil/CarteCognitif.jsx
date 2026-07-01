@@ -2,7 +2,7 @@
 // barre de progression par dimension.
 //
 // Props :
-//   cognitif : { type_cognitif, nom_profil, dimensions: { energie, perception, decision, organisation } }
+//   cognitif : {  nom_profil, dimensions: { energie, perception, decision, organisation } }
 
 export default function CarteCognitif({ cognitif }) {
   const axes = [
@@ -18,7 +18,7 @@ export default function CarteCognitif({ cognitif }) {
         Profil cognitif
       </h3>
       <div className="text-sm text-gray-500 mb-4">
-        {cognitif.type_cognitif} : {cognitif.nom_profil}
+        {cognitif.nom_profil}
       </div>
 
       <div className="space-y-3">
@@ -29,7 +29,7 @@ export default function CarteCognitif({ cognitif }) {
               <div className="flex justify-between text-xs mb-1">
                 <span className="uppercase text-gray-500">{label}</span>
                 <span className="font-medium">
-                  {dim.dominant} ({dim.lettre}) - {dim.score_pourcentage}%
+                  {dim.dominant} - {dim.score_pourcentage}%
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
