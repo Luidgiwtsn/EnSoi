@@ -6,9 +6,9 @@
 
 export default function CarteCognitif({ cognitif }) {
   const axes = [
-    { cle: 'energie', label: 'Energie' },
+    { cle: 'energie', label: 'Énergie' },
     { cle: 'perception', label: 'Perception' },
-    { cle: 'decision', label: 'Decision' },
+    { cle: 'decision', label: 'Décision' },
     { cle: 'organisation', label: 'Organisation' },
   ];
 
