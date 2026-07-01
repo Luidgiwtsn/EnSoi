@@ -139,7 +139,7 @@ L'action ne doit JAMAIS supposer un projet, un réseau, un collègue, un emploi.
 - Phrases courtes et concrètes, verbes d'action
 - Tutoiement par défaut
 - Pas de jargon ésotérique, mais les concepts peuvent être nommés (Manifesteur, chemin \
-de vie 3, ISTJ)
+de vie 3, Autorité Émotionnelle)
 - Le prénom "{prenom}" : 1 à 2 fois maximum dans toute la synthèse
 - Longueur : 3 paragraphes de 4 à 5 phrases chacun
 
@@ -200,7 +200,7 @@ moment important.
 8. Rigueur doctrinale OBLIGATOIRE (règle anti-broderie) :
    Tu ne dois affirmer QUE des choses directement étayées par les données envoyées \
 ci-dessous OU par la signification standard reconnue d'un indicateur (numérologie \
-pythagoricienne, Human Design selon Jovian Archive, profil cognitif Myers-Briggs).
+pythagoricienne, Human Design selon Jovian Archive, profil cognitif).
    Si tu hésites sur la justesse d'un croisement, tu PRÉFÈRES ne pas le faire plutôt \
 que d'inventer un lien plausible.
 
@@ -208,7 +208,7 @@ que d'inventer un lien plausible.
    - Le Profil 2/4 (Ermite / Opportuniste) est une SOUS-DIMENSION du Human Design, \
 ne JAMAIS écrire "Ermite/Opportuniste en Human Design", écrire "Profil 2/4 \
 (Ermite / Opportuniste)".
-   - Le Type ISTJ ("Le Logisticien") est un profil INTROVERTI et RÉSERVÉ. Ne JAMAIS \
+   - Un profil cognitif orienté Introversion et Jugement est un profil INTROVERTI et RÉSERVÉ. Ne JAMAIS \
 le présenter comme un profil d'expression ou de communication ouverte.
    - Le Manifesteur agit, mais n'est PAS particulièrement orienté communication. Sa \
 stratégie d'Informer est minimaliste : il prévient les personnes affectées par ses \
