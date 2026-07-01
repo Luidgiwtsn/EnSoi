@@ -78,7 +78,7 @@ export default function CognitiveQuestionnaire({ value, onChange }) {
   return (
     <div className="space-y-2">
       <div className="text-sm text-gray-600 mb-4">
-        {nbRepondues} / {questions.length} questions repondues
+        {nbRepondues} / {questions.length} questions répondues
       </div>
 
       {questions.map((question, index) => {

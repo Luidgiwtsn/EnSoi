@@ -8,7 +8,7 @@ function formaterErreur(err) {
   if (err.code === 'ECONNABORTED') {
     return {
       titre: 'Le serveur met trop de temps a repondre',
-      detail: "Reessayez dans quelques instants. Si le probleme persiste, le serveur est peut-etre temporairement surcharge.",
+      detail: "Réessayez dans quelques instants. Si le problème persiste, le serveur est peut-être temporairement surchargé.",
     };
   }
   if (!err.response) {
@@ -21,7 +21,7 @@ function formaterErreur(err) {
   if (status === 429) {
     return {
       titre: 'Trop de tentatives',
-      detail: "Pour eviter la surcharge, la generation est limitee a 3 par minute. Patientez un instant avant de reessayer.",
+      detail: "Pour éviter la surcharge, la génération est limitée à 3 par minute. Patientez un instant avant de réessayer.",
     };
   }
   if (status === 422) {
@@ -33,12 +33,12 @@ function formaterErreur(err) {
   if (status >= 500) {
     return {
       titre: 'Erreur du serveur',
-      detail: "Une erreur est survenue cote serveur. Reessayez dans quelques instants.",
+      detail: "Une erreur est survenue côté serveur. Réessayez dans quelques instants.",
     };
   }
   return {
     titre: 'Une erreur est survenue',
-    detail: "Veuillez reessayer. Si le probleme persiste, contactez le support.",
+    detail: "Veuillez réessayer. Si le problème persiste, contactez le support.",
   };
 }
 
@@ -87,7 +87,7 @@ export default function GenererPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-serif mb-6">Generer un profil</h1>
+      <h1 className="text-3xl font-serif mb-6">Générer un profil</h1>
 
       {erreur && (
         <div className="max-w-2xl mx-auto mb-4 p-4 border border-red-300 bg-red-50 rounded">

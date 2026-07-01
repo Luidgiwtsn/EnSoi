@@ -43,7 +43,7 @@ function ProfilCard({ profil, onDelete, onShare, onExport }) {
             {profil.prenom} {profil.nom_famille}
           </h3>
           <p className="text-sm text-gray-500 mt-1">
-            Genere le {dateCreation}
+            Généré le {dateCreation}
           </p>
         </div>
         {profil.statut === 'partiel' && (
