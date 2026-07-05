@@ -111,21 +111,29 @@ chaque systeme pris isolement ne montre pas.
 Redige une synthese de 3 paragraphes. Chaque paragraphe a une fonction \
 precise, mais le lecteur ne doit JAMAIS la voir explicitement.
 
-PARAGRAPHE 1 - RECONNAISSANCE :
-Nomme un mecanisme interieur que {prenom} vit deja mais ne sait probablement \
-pas mettre en mots. Ce n'est PAS un trait de personnalite ("tu es X"), c'est \
-un mouvement qui se produit en elle dans certaines situations. La personne \
-doit lire ce paragraphe et se dire : "oui, c'est exactement ca, comment tu \
-sais ?". Ce mecanisme doit emerger de la SUPERPOSITION de 2 ou 3 indicateurs \
-des trois grilles - pas d'un seul systeme.
+PARAGRAPHE 1 - RECONNAISSANCE (registre : FORCE) :
+Nomme une force interieure que {prenom} vit deja mais ne sait probablement \
+pas mettre en mots. C'est un mouvement vivant qui la traverse quand elle est \
+alignee : ce qui monte en elle, ce qui coule bien, ce qui la fait avancer \
+sans effort particulier. Ce n'est PAS un trait de personnalite ("tu es X"), \
+c'est un mouvement interieur qui se produit dans certaines situations. La \
+personne doit lire ce paragraphe et se dire : "oui, c'est exactement ca, \
+comment tu sais ?". Cette force doit emerger de la SUPERPOSITION de 2 ou 3 \
+indicateurs des trois grilles - pas d'un seul systeme. Registre : lumineux, \
+vivant, sans naivete - tu nommes une capacite reelle, pas une flatterie.
 
-PARAGRAPHE 2 - COMPREHENSION :
-Explique un ressenti recurrent, un blocage, une fatigue ou une frustration \
-que la personne vit sans en comprendre l'origine. Fais le lien : "quand tu \
-ressens X dans telle situation, c'est parce que Y se joue en toi". Le POURQUOI \
-compte plus que le QUOI. Cette dimension doit venir d'un indicateur \
-SECONDAIRE qui complique l'expression du moteur principal (le Type Human \
-Design), jamais du moteur lui-meme.
+PARAGRAPHE 2 - COMPREHENSION (registre : NUANCE) :
+Explique une NUANCE dans la facon dont cette force s'exprime : un endroit ou \
+elle se module, une facette qui la colore, une exigence particuliere qu'elle \
+demande a la personne. Ce n'est PAS un blocage a "corriger" ni une "fatigue \
+a soulager" - c'est une subtilite de son fonctionnement qui, si elle est \
+comprise, laisse la force s'exprimer plus librement. Fais le lien : "quand \
+tu te trouves dans telle situation, quelque chose de X se passe en toi, et \
+c'est parce que Y colore ta facon d'etre". Cette nuance vient d'un indicateur \
+SECONDAIRE (numerologie, profil cognitif, ou sous-dimension du Human Design \
+comme le Profil) qui module l'expression du moteur principal (le Type Human \
+Design). Le moteur reste une force, jamais un defaut. Registre : lucide mais \
+constructif - tu decris une texture, pas une souffrance.
 
 PARAGRAPHE 3 - INTROSPECTION ACTIVE :
 Propose UNE pratique d'introspection pour la semaine. Choisis LIBREMENT entre :
@@ -267,6 +275,24 @@ trouver sa verite. C'est la parole sortie a voix haute qui revele.
 particulierement forte. Si tu le vois dans [DONNEES VERROUILLEES], tu DOIS \
 l'exploiter.
 
+9. EQUILIBRE DU REGISTRE (regle contre le negatif dominant) :
+   Le registre general de la synthese penche vers ce qui vit chez la \
+personne, pas vers ce qui coince.
+   Cible indicative : environ 40 pour cent du texte nomme des forces, des \
+capacites, des mouvements alignes ; environ 30 pour cent est neutre \
+(constats, mecanismes descriptifs) ; environ 30 pour cent nomme des nuances, \
+des frottements, des exigences particulieres.
+   Une synthese qui liste plus de blocages que de forces est une synthese \
+ratee, meme si elle est doctrinalement juste.
+   Vocabulaire a privilegier : "coule", "monte", "traverse", "s'aligne", \
+"trouve", "se pose", "s'ouvre", "vibre juste".
+   Vocabulaire a limiter (jamais interdit, mais rare) : "blocage", "fatigue", \
+"frustration", "resistance", "fissure", "tiraillement", "epuisement", \
+"amertume".
+   Si le pas-soi du Type HD (ex: Amertume pour Projecteur, Frustration pour \
+Generateur) est mentionne, il l'est UNE FOIS, comme un signal utile - pas \
+comme un etat dominant.
+
 CONTROLE FINAL avant d'ecrire la reponse :
 - Est-ce que chaque chiffre numerologique cite est bien l'un des quatre \
 listes dans [DONNEES VERROUILLEES] ?
@@ -274,6 +300,7 @@ listes dans [DONNEES VERROUILLEES] ?
 - Est-ce qu'aucune tournure bannie de la regle 3 n'apparait ?
 - Est-ce que le paragraphe 3 se termine sur l'action, pas sur une promesse ?
 - Est-ce que le prenom "{prenom}" apparait exactement une fois ?
+- Est-ce que le texte penche plus vers la force que vers le blocage ? (cible : 40% force, 30% neutre, 30% nuance)
 
 <donnees_utilisateur>
 Prenom : {prenom}
@@ -320,11 +347,11 @@ class GroqService:
     def generer_synthese(self, profil_data: dict) -> Optional[str]:
         """
         Returns:
-            str  — synthèse si Groq répond dans les délais
-            None — si timeout, erreur réseau, ou circuit breaker ouvert
+            str  - synthèse si Groq répond dans les délais
+            None - si timeout, erreur réseau, ou circuit breaker ouvert
         """
         if _cb_is_open():
-            logger.info("GroqService — circuit breaker ouvert, synthèse ignorée")
+            logger.info("GroqService - circuit breaker ouvert, synthèse ignorée")
             return None
 
         prompt = _construire_prompt(profil_data)
@@ -333,34 +360,36 @@ class GroqService:
             response = self._client.chat.completions.create(
                 model=self._model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=600,
+                max_tokens=2500,
                 temperature=0.7,
                 timeout=self._timeout,
+                extra_body={"reasoning_effort": "low"},
             )
-            synthese = response.choices[0].message.content.strip()
+            content = response.choices[0].message.content
+            synthese = content.strip() if content else ""
             _cb_record_success()
             logger.info("GroqService — synthèse générée (%d caractères)", len(synthese))
             return synthese
 
         except APITimeoutError:
-            logger.warning("GroqService — timeout après %.0fs", self._timeout)
+            logger.warning("GroqService - timeout après %.0fs", self._timeout)
             _cb_record_failure()
             return None
 
         except APIConnectionError as exc:
-            logger.warning("GroqService — erreur réseau : %s", exc)
+            logger.warning("GroqService - erreur réseau : %s", exc)
             _cb_record_failure()
             return None
 
         except APIStatusError as exc:
             logger.warning(
-                "GroqService — erreur API HTTP %d : %s", exc.status_code, exc.message
+                "GroqService - erreur API HTTP %d : %s", exc.status_code, exc.message
             )
             _cb_record_failure()
             return None
 
         except Exception as exc:
-            logger.error("GroqService — erreur inattendue : %s", exc, exc_info=True)
+            logger.error("GroqService - erreur inattendue : %s", exc, exc_info=True)
             _cb_record_failure()
             return None
 
