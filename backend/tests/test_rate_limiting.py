@@ -1,4 +1,5 @@
 """Tests d'intégration pour le rate limiting (slowapi)."""
+from unittest.mock import patch
 
 import pytest
 
@@ -25,7 +26,28 @@ def limiter_actif():
         limiter.reset()
     except (AttributeError, NotImplementedError):
         pass
+    
 
+@pytest.fixture
+def mock_groq():
+    """
+    Mock GroqService.generer_synthese pour eviter les vrais appels a
+    l'API Groq externe pendant les tests de rate limiting.
+
+    Sans ce mock, chaque requete POST /api/generate declenche un vrai
+    appel a Groq (~1.4s en normal, jusqu'a 40s si rate limit externe
+    provoque des retries SDK). La fenetre d'une minute du rate limiter
+    interne (slowapi) explose alors, et le test echoue a cause d'une
+    dependance externe et non d'un bug de slowapi.
+
+    Le mock retourne instantanement une synthese fictive : le test se
+    concentre sur ce qu'il doit tester (slowapi), isole de Groq.
+    """
+    with patch(
+        "app.services.groq_service.GroqService.generer_synthese",
+        return_value="Synthese mockee pour test rate limiting.",
+    ) as mock:
+        yield mock
 
 PAYLOAD_LOGIN = {
     "email": "rate-limit-test@example.com",
@@ -62,14 +84,16 @@ class TestRateLimitLogin:
 class TestRateLimitGenerate:
     """3 requêtes/minute sur /api/generate (protection contre abus IA)."""
 
-    def test_3_premieres_requetes_ne_sont_pas_bloquees(self, client, limiter_actif):
+    def test_3_premieres_requetes_ne_sont_pas_bloquees(
+        self, client, limiter_actif, mock_groq
+    ):
         for i in range(3):
             response = client.post("/api/generate", json=PAYLOAD_GENERATE)
             assert response.status_code != 429, (
                 f"Requête {i + 1} bloquée trop tôt : {response.status_code}"
             )
 
-    def test_4e_requete_retourne_429(self, client, limiter_actif):
+    def test_4e_requete_retourne_429(self, client, limiter_actif, mock_groq):
         for _ in range(3):
             client.post("/api/generate", json=PAYLOAD_GENERATE)
         response = client.post("/api/generate", json=PAYLOAD_GENERATE)
