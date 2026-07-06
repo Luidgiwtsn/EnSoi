@@ -1,10 +1,13 @@
 // Bloc affichant la synthese IA generee par Groq. Affiche la synthese
-// formatee si disponible, sinon un message explicatif.
+// formatee (avec paragraphes separes visuellement) si disponible,
+// sinon un message explicatif.
+//
+// Le decoupage explicite par paragraphes garantit un rendu coherent
+// entre l'UI et le PDF (pdfExport.js applique la meme logique).
 //
 // Props :
 //   synthese : string | null
 //   statut   : 'complet' | 'partiel'
-
 export default function BlocSynthese({ synthese, statut }) {
   if (statut === 'partiel' || !synthese) {
     return (
@@ -21,13 +24,25 @@ export default function BlocSynthese({ synthese, statut }) {
     );
   }
 
+  // Decoupage par paragraphes (le modele Groq retourne \n\n entre chaque §).
+  // Meme logique que dans frontend/src/services/pdfExport.js pour un rendu
+  // coherent entre l'affichage web et l'export PDF.
+  const paragraphes = synthese
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
+
   return (
     <div className="border rounded-lg p-5 bg-white">
       <h3 className="text-xl font-serif mb-3 text-ensoi-primary">
         Synthèse personnalisée
       </h3>
-      <div className="prose prose-sm max-w-none whitespace-pre-line text-gray-700">
-        {synthese}
+      <div className="max-w-none text-gray-700">
+        {paragraphes.map((paragraphe, index) => (
+          <p key={index} className="mb-4 last:mb-0 leading-relaxed">
+            {paragraphe}
+          </p>
+        ))}
       </div>
     </div>
   );
