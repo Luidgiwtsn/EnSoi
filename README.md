@@ -114,7 +114,7 @@ L'application est déployée sur deux services :
 | Variable | Valeur prod |
 |----------|-------------|
 | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` (injecté par Railway) |
-| `SECRET_KEY` | Générer avec `python -c "import secrets; print(secrets.token_hex(32))"` — clé différente du dev |
+| `SECRET_KEY` | Générer avec `python -c "import secrets; print(secrets.token_hex(32))"` - clé différente du dev |
 | `GROQ_API_KEY` | Clé Groq de production |
 | `GROQ_MODEL` | `llama-3.3-70b-versatile` |
 | `FRONTEND_URLS` | URL Vercel (ex: `https://ensoi.vercel.app`) |
@@ -124,7 +124,7 @@ L'application est déployée sur deux services :
 > **Note** : `RAILPACK_DEPLOY_APT_PACKAGES` est une variable de **build Railway** (pas d'application). Elle n'a pas d'équivalent local et n'apparaît donc pas dans `backend/.env.example`. Elle indique à Railpack d'installer le paquet apt `libsqlite3-0`, nécessaire au runtime de `pyswisseph` (Swiss Ephemeris).
 
 
-5. Au démarrage, le `Procfile` exécute `alembic upgrade head` puis lance Uvicorn — les migrations sont donc appliquées automatiquement à chaque déploiement.
+5. Au démarrage, le `Procfile` exécute `alembic upgrade head` puis lance Uvicorn - les migrations sont donc appliquées automatiquement à chaque déploiement.
 6. Vérifier la santé après déploiement : `curl https://<URL-RAILWAY>/api/health`.
 
 ### Frontend sur Vercel
