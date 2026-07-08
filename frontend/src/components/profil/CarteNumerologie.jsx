@@ -1,31 +1,55 @@
-// Carte affichant les 4 nombres de la numerologie en grille 2x2.
+import AboutSection from './AboutSection';
+import ValeurDetail from './ValeurDetail';
+import {
+  numerologieContenu,
+  getResultatNumerologie,
+  getDetailNumerologie,
+} from '../../content/theories/numerologie';
+
+// Carte affichant les 4 nombres de la numerologie en grille 2x2 cliquable.
 //
 // Props :
 //   numerologie : { chemin_vie, expression, intime, realisation }
-
 export default function CarteNumerologie({ numerologie }) {
-  const items = [
-    { label: 'Chemin de vie', valeur: numerologie.chemin_vie },
-    { label: 'Expression', valeur: numerologie.expression },
-    { label: 'Intime', valeur: numerologie.intime },
-    { label: 'Réalisation', valeur: numerologie.realisation },
+  const valeurs = [
+    {
+      cle: 'chemin_vie',
+      label: 'Chemin de vie',
+      valeur: numerologie.chemin_vie,
+      detail: getDetailNumerologie('chemin_vie', numerologie.chemin_vie),
+    },
+    {
+      cle: 'expression',
+      label: 'Expression',
+      valeur: numerologie.expression,
+      detail: getDetailNumerologie('expression', numerologie.expression),
+    },
+    {
+      cle: 'intime',
+      label: 'Intime',
+      valeur: numerologie.intime,
+      detail: getDetailNumerologie('intime', numerologie.intime),
+    },
+    {
+      cle: 'realisation',
+      label: 'Réalisation',
+      valeur: numerologie.realisation,
+      detail: getDetailNumerologie('realisation', numerologie.realisation),
+    },
   ];
+
+  const resultatPersonnalise = getResultatNumerologie(numerologie.chemin_vie);
 
   return (
     <div className="border rounded-lg p-5 bg-white">
       <h3 className="text-xl font-serif mb-4 text-ensoi-primary">Numérologie</h3>
-      <div className="grid grid-cols-2 gap-4">
-        {items.map((item) => (
-          <div key={item.label} className="text-center">
-            <div className="text-4xl font-serif text-ensoi-primary">
-              {item.valeur}
-            </div>
-            <div className="text-xs uppercase text-gray-500 mt-1">
-              {item.label}
-            </div>
-          </div>
-        ))}
-      </div>
+
+      <ValeurDetail valeurs={valeurs} layout="grid" />
+
+      <AboutSection
+        contenu={numerologieContenu}
+        resultatPersonnalise={resultatPersonnalise}
+      />
     </div>
   );
 }
