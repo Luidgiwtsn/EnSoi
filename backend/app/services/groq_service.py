@@ -345,18 +345,22 @@ class GroqService:
         self._timeout = float(settings.groq_timeout)
 
     def generer_synthese(self, profil_data: dict) -> Optional[str]:
-        """
-        Returns:
-            str  - synthèse si Groq répond dans les délais
-            None - si timeout, erreur réseau, ou circuit breaker ouvert
-        """
+        """Debug prod - retire les prints après diagnostic"""
+        print(f"[DEBUG] GroqService.generer_synthese CALLED", flush=True)
+        print(f"[DEBUG] api_key present: {bool(settings.groq_api_key)}, len: {len(settings.groq_api_key)}", flush=True)
+        print(f"[DEBUG] model: {self._model}", flush=True)
+        print(f"[DEBUG] timeout: {self._timeout}", flush=True)
+        print(f"[DEBUG] cb_open: {_cb_is_open()}", flush=True)
+
         if _cb_is_open():
-            logger.info("GroqService - circuit breaker ouvert, synthèse ignorée")
+            print(f"[DEBUG] Circuit breaker OPEN, returning None", flush=True)
             return None
 
         prompt = _construire_prompt(profil_data)
+        print(f"[DEBUG] prompt built, len: {len(prompt)}", flush=True)
 
         try:
+            print(f"[DEBUG] calling Groq API...", flush=True)
             response = self._client.chat.completions.create(
                 model=self._model,
                 messages=[{"role": "user", "content": prompt}],
@@ -367,8 +371,24 @@ class GroqService:
             content = response.choices[0].message.content
             synthese = content.strip() if content else ""
             _cb_record_success()
-            logger.info("GroqService — synthèse générée (%d caractères)", len(synthese))
+            print(f"[DEBUG] SUCCESS: {len(synthese)} chars", flush=True)
             return synthese
+        except APITimeoutError:
+            print(f"[DEBUG] TIMEOUT after {self._timeout}s", flush=True)
+            _cb_record_failure()
+            return None
+        except APIConnectionError as exc:
+            print(f"[DEBUG] CONNECTION ERROR: {exc}", flush=True)
+            _cb_record_failure()
+            return None
+        except APIStatusError as exc:
+            print(f"[DEBUG] API ERROR {exc.status_code}: {exc.message}", flush=True)
+            _cb_record_failure()
+            return None
+        except Exception as exc:
+            print(f"[DEBUG] UNEXPECTED {type(exc).__name__}: {exc}", flush=True)
+            _cb_record_failure()
+            return None
 
         except APITimeoutError:
             logger.warning("GroqService - timeout après %.0fs", self._timeout)
