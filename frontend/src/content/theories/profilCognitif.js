@@ -91,8 +91,8 @@ export const profilCognitifContenu = {
         texte:
           "Vous prenez vos décisions d'abord en écoutant vos valeurs personnelles, les émotions en jeu et l'impact humain. Vous cherchez ce qui est juste pour les personnes concernées, y compris vous-même, avant ce qui est purement rationnel.",
       },
-      Raisonnement: {
-        titre: 'Décision · Raisonnement',
+      Logique: {
+        titre: 'Décision · Logique',
         texte:
           "Vous prenez vos décisions d'abord par une analyse logique et objective. Vous cherchez la cohérence, la cause réelle et l'efficacité, en mettant temporairement de côté les émotions pour arriver à un jugement clair.",
       },
