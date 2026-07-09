@@ -367,7 +367,6 @@ class GroqService:
                 max_tokens=2500,
                 temperature=0.7,
                 timeout=self._timeout,
-                extra_body={"reasoning_effort": "low"},
             )
             content = response.choices[0].message.content
             synthese = content.strip() if content else ""
