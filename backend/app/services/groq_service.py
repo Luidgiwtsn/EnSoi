@@ -371,6 +371,7 @@ class GroqService:
             )
             content = response.choices[0].message.content
             synthese = content.strip() if content else ""
+            synthese = synthese.replace(" — ", ", ").replace("—", ",")
             _cb_record_success()
             print(f"[DEBUG] SUCCESS: {len(synthese)} chars", flush=True)
             return synthese
